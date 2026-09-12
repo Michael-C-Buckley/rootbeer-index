@@ -5,7 +5,7 @@ Rootbeer binaries and their release history stay in `tale/rootbeer`.
 
 - `recipes/`: canonical identities and exact source/backend recipes.
 - `rb package export`: build or resolve packages, check commands and offline replay,
-  then export a platform index. Aqua/GitHub imports keep their locked upstream URLs.
+  then export a platform index. GitHub imports keep their locked upstream URLs.
 - `rb package assemble`: merge platform outputs and require complete coverage.
 - `rb package publish`: retain source archives as GHCR blobs and sign the Pages index.
 
@@ -14,7 +14,9 @@ ORAS authentication, Git history, and Pages deployment; there is no Python depen
 
 ## Local checks
 
-Use a Rootbeer build with `package export`, `assemble`, and `publish`:
+Use a Rootbeer build with `package export`, `assemble`, `publish`, and per-system
+recipe `assets` support. Update `ROOTBEER_REV` to that engine commit before
+publishing these recipes:
 
 ```sh
 rb package --catalog recipes check
