@@ -37,12 +37,20 @@ jobs:
           path: engine
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
+      - name: Identify Rust toolchain
+        id: rust
+        run: echo "version=$(rustc --version | shasum -a 256 | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+      - name: Cache package engine
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            engine/target
+          key: engine-verify-v1-${{ matrix.runner }}-${{ steps.rust.outputs.version }}-${{ vars.ROOTBEER_REV }}-${{ hashFiles('engine/Cargo.lock') }}
       - name: Build package engine
         working-directory: engine
         run: cargo build --locked --release --bin rb
-      - name: Test package engine
-        working-directory: engine
-        run: cargo test --locked --workspace
       - name: Build, test, and export recipes
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -76,6 +84,17 @@ jobs:
           path: engine
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
+      - name: Identify Rust toolchain
+        id: rust
+        run: echo "version=$(rustc --version | shasum -a 256 | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+      - name: Cache package engine
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            engine/target
+          key: engine-publish-v1-ubuntu-24.04-${{ steps.rust.outputs.version }}-${{ vars.ROOTBEER_REV }}-${{ hashFiles('engine/Cargo.lock') }}
       - name: Build verifier and signer
         working-directory: engine
         run: cargo build --locked --release --bin rb

@@ -23,7 +23,10 @@ rb package --catalog recipes check
 rb package --catalog recipes export --registry tale/rootbeer-index --output result
 ```
 
-The workflow tests macOS 15 and Ubuntu 24.04 on ARM and Intel. Platform jobs receive
+The workflow tests macOS 15 and Ubuntu 24.04 on ARM and Intel. It checks package
+commands and offline replay; the engine's Rust test suite runs in `tale/rootbeer`.
+Cargo caches are scoped by runner, Rust toolchain, engine revision, and lockfile.
+The publisher uses a separate cache from recipe verification jobs. Platform jobs receive
 no publishing credentials. The publisher runs separately on main, and signing is
 gated on complete coverage for every declared version and platform. No GitHub
 releases are created.
