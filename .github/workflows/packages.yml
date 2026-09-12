@@ -2,9 +2,18 @@ name: Package index
 on:
   push:
     branches: [main]
+    paths: ["recipes/**", ".github/workflows/packages.yml"]
   pull_request:
     branches: [main]
+    paths: ["recipes/**", ".github/workflows/packages.yml"]
   workflow_dispatch:
+    inputs:
+      recheck:
+        description: Rebuild and recheck every package
+        type: boolean
+        default: false
+  schedule:
+    - cron: "23 6 * * 1"
 
 permissions:
   contents: read
@@ -50,11 +59,44 @@ jobs:
           key: engine-verify-v1-${{ matrix.runner }}-${{ steps.rust.outputs.version }}-${{ vars.ROOTBEER_REV }}-${{ hashFiles('engine/Cargo.lock') }}
       - name: Build package engine
         working-directory: engine
-        run: cargo build --locked --release --bin rb
+        run: |
+          export RB_BUILD_TIMESTAMP="$(git show -s --format=%cI HEAD)"
+          cargo build --locked --release --bin rb
+      - name: Identify package build environment
+        id: package-environment
+        run: |
+          : "${ImageOS:?}" "${ImageVersion:?}" "${RUNNER_ARCH:?}"
+          {
+            printf '%s\n' "$ImageOS" "$ImageVersion" "$RUNNER_ARCH"
+            cc --version
+            make --version
+            rustc --version --verbose
+          } > "$RUNNER_TEMP/package-environment"
+          echo "digest=$(shasum -a 256 "$RUNNER_TEMP/package-environment" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+      - name: Restore verified package results
+        uses: actions/cache/restore@v4
+        with:
+          path: .package-results
+          key: results-v1-${{ matrix.runner }}-${{ vars.ROOTBEER_REV }}-${{ steps.package-environment.outputs.digest }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            results-v1-${{ matrix.runner }}-${{ vars.ROOTBEER_REV }}-${{ steps.package-environment.outputs.digest }}-
       - name: Build, test, and export recipes
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: engine/target/release/rb package --catalog recipes export --registry tale/rootbeer-index --output result
+          CACHE_CONTEXT: ${{ steps.package-environment.outputs.digest }}
+          SHOULD_RECHECK: ${{ github.event_name == 'schedule' || inputs.recheck == true }}
+        run: |
+          options=()
+          if [ "$SHOULD_RECHECK" = true ]; then options+=(--recheck); fi
+          engine/target/release/rb package --catalog recipes export \
+            --registry tale/rootbeer-index --output result \
+            --cache .package-results --cache-context "$CACHE_CONTEXT" "${options[@]}"
+      - name: Save verified package results
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/cache/save@v4
+        with:
+          path: .package-results
+          key: results-v1-${{ matrix.runner }}-${{ vars.ROOTBEER_REV }}-${{ steps.package-environment.outputs.digest }}-${{ github.run_id }}-${{ github.run_attempt }}
       - uses: actions/upload-artifact@v6
         with:
           name: packages-${{ matrix.runner }}

@@ -31,6 +31,43 @@ no publishing credentials. The publisher runs separately on main, and signing is
 gated on complete coverage for every declared version and platform. No GitHub
 releases are created.
 
+## Incremental verification
+
+Normal pushes reuse successful package results. Each cache entry is keyed by the
+exact recipe (including commands and revision), transitive dependency recipes,
+platform, registry, engine binary, and build environment. Adding a package does
+not invalidate unrelated results. Defaults and descriptions do not rebuild binaries.
+
+A hit copies verified receipts and source archives into a complete platform bundle;
+it does not resolve upstream releases, compile sources, or execute commands again.
+Receipts retain their original catalog/provenance rather than claiming a new build.
+Missing caches fall back to full verification; corrupt entries fail closed.
+
+CI restores package results separately from Cargo caches and saves them only from
+successful main-branch verification jobs. PRs can read main's results but cannot
+promote their own results into publication. The runner image and toolchain are part
+of the cache identity. Engine builds use a stable timestamp from the pinned commit.
+Documentation-only pushes do not trigger package jobs.
+
+Every Monday and on manual dispatch with `recheck` enabled, CI checks every recipe
+again and refreshes successful cache entries. Locally:
+
+```sh
+rb package --catalog recipes export --registry tale/rootbeer-index --output result \
+  --cache /tmp/rootbeer-package-results --cache-context "$BUILD_ENVIRONMENT_ID"
+```
+
+`BUILD_ENVIRONMENT_ID` must identify the OS image and build tools; change it when
+they change. Add `--recheck` to bypass reuse. Only use trusted cache directories:
+hashes detect corruption, but the cache is not an independently signed index.
+GitHub cache eviction affects performance, not correctness. Archives are still
+copied/uploaded as part of complete platform bundles, and publication still checks
+anonymous GHCR access. This is incremental package verification, not a hermetic
+source-build system or a permanent substitute for the published artifact store.
+
+These workflow changes require an engine with `export --cache --cache-context`;
+update `ROOTBEER_REV` before enabling them.
+
 ## Enable publication
 
 The repository starts with publication disabled. After committing the Rootbeer

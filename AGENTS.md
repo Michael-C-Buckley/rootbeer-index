@@ -18,3 +18,7 @@ Choose the newest upstream release available for each platform. Use
 `default_versions` for platforms whose newest supported release differs from
 `default_version`; never hold every platform back for one discontinued target.
 Keep explicit version requests exact and retain older recipes for existing locks.
+
+Do as little CI work as possible: reuse verified package results when their
+recipe, dependency recipes, platform, engine, and build environment are unchanged.
+Keep full qualification available for scheduled and explicit rechecks.
