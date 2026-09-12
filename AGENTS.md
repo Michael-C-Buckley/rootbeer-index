@@ -13,3 +13,8 @@ upstream code; never expose publication credentials to build or pull-request job
 Changes target main. Do not commit or push without the user's instruction.
 Publication requires all declared versions and platforms. Never remove retained
 snapshots, receipts, or OCI manifests needed by existing lockfiles.
+
+Choose the newest upstream release available for each platform. Use
+`default_versions` for platforms whose newest supported release differs from
+`default_version`; never hold every platform back for one discontinued target.
+Keep explicit version requests exact and retain older recipes for existing locks.
