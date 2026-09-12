@@ -4,20 +4,21 @@ Canonical Lua recipes, native platform checks, and signed catalog publication.
 Rootbeer binaries and their release history stay in `tale/rootbeer`.
 
 - `recipes/`: canonical identities and exact source/backend recipes.
-- `scripts/build.py`: build or resolve packages, check commands and offline replay,
+- `rb package export`: build or resolve packages, check commands and offline replay,
   then export a platform index. Aqua/GitHub imports keep their locked upstream URLs.
-- `scripts/assemble.py`: merge platform outputs and require complete coverage.
-- `scripts/publish.py`: retain source archives as GHCR blobs and sign the Pages index.
+- `rb package assemble`: merge platform outputs and require complete coverage.
+- `rb package publish`: retain source archives as GHCR blobs and sign the Pages index.
+
+Package semantics and tests live in the Rust engine. CI orchestrates these commands,
+ORAS authentication, Git history, and Pages deployment; there is no Python dependency.
 
 ## Local checks
 
-Use a Rootbeer build with `package verify-index` and `package sign-index`:
+Use a Rootbeer build with `package export`, `assemble`, and `publish`:
 
 ```sh
 rb package --catalog recipes check
-python3 -m unittest discover -s tests
-python3 scripts/build.py --rb ../rootbeer/target/release/rb \
-  --registry tale/rootbeer-index --output result
+rb package --catalog recipes export --registry tale/rootbeer-index --output result
 ```
 
 The workflow tests macOS 15 and Ubuntu 24.04 on ARM and Intel. Platform jobs receive
@@ -28,7 +29,7 @@ releases are created.
 ## Enable publication
 
 The repository starts with publication disabled. After committing the Rootbeer
-signer and verifier, set repository variable `ROOTBEER_REV` to that full commit SHA.
+native publication commands, set repository variable `ROOTBEER_REV` to that full commit SHA.
 The engine checkout is pinned; recipe-only changes do not require rebuilding a
 Rootbeer release for users.
 

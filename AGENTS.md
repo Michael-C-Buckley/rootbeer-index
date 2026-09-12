@@ -4,7 +4,9 @@ Recipes live in `recipes/*.lua`. Use canonical lowercase names and exact upstrea
 versions. Increment revisions when changing an existing recipe. Do not edit generated
 indexes or add hand-written checksums without verifying the upstream bytes.
 
-Run `rb package --catalog recipes check` and the native checks in `scripts/build.py`.
+Run `rb package --catalog recipes check` and `rb package --catalog recipes export
+--registry tale/rootbeer-index --output result`. Tests for these commands live in
+the Rootbeer engine repository.
 Declare only platforms that the workflow can test. Source builds execute trusted
 upstream code; never expose publication credentials to build or pull-request jobs.
 

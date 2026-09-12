@@ -40,12 +40,13 @@ jobs:
       - name: Build package engine
         working-directory: engine
         run: cargo build --locked --release --bin rb
-      - name: Check publication scripts
-        run: python3 -m unittest discover -s tests
+      - name: Test package engine
+        working-directory: engine
+        run: cargo test --locked --workspace
       - name: Build, test, and export recipes
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: python3 scripts/build.py --rb engine/target/release/rb --registry tale/rootbeer-index --output result
+        run: engine/target/release/rb package --catalog recipes export --registry tale/rootbeer-index --output result
       - uses: actions/upload-artifact@v6
         with:
           name: packages-${{ matrix.runner }}
@@ -83,7 +84,7 @@ jobs:
           pattern: packages-*
           path: inputs
       - name: Require complete platform coverage
-        run: python3 scripts/assemble.py --inputs inputs --output bundle --rb engine/target/release/rb
+        run: engine/target/release/rb package assemble --inputs inputs --output bundle
       - uses: oras-project/setup-oras@v1
         with:
           version: 1.3.0
@@ -110,8 +111,15 @@ jobs:
           INDEX_URL: ${{ vars.INDEX_URL }}
         run: |
           sequence=$((GITHUB_RUN_NUMBER * 1000 + GITHUB_RUN_ATTEMPT))
-          python3 scripts/publish.py --rb engine/target/release/rb --bundle bundle --site site \
-            --site-url "$INDEX_URL" --registry tale/rootbeer-index --sequence "$sequence"
+          umask 077
+          key="$RUNNER_TEMP/index-signing-key.der"
+          trap 'rm -f "$key"' EXIT
+          printf '%s' "$INDEX_SIGNING_KEY" | base64 --decode > "$key"
+          unset INDEX_SIGNING_KEY
+          engine/target/release/rb package publish --bundle bundle --site site \
+            --site-url "$INDEX_URL" --registry tale/rootbeer-index --sequence "$sequence" \
+            --repository-url "https://github.com/$GITHUB_REPOSITORY" \
+            --key "$key" --public-key "$INDEX_PUBLIC_KEY"
       - name: Retain immutable snapshots
         env:
           GH_TOKEN: ${{ github.token }}
