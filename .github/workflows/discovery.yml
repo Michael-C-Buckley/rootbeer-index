@@ -21,24 +21,26 @@ jobs:
     outputs:
       changed: ${{ steps.report.outputs.changed }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Require a pinned package engine
         env:
           ENGINE_REV: ${{ vars.ROOTBEER_REV }}
         run: '[[ "$ENGINE_REV" =~ ^[0-9a-f]{40}$ ]]'
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: tale/rootbeer
           ref: ${{ vars.ROOTBEER_REV }}
           path: engine
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de # master
+        with:
+          toolchain: stable
       - name: Identify Rust toolchain
         id: rust
         run: echo "version=$(rustc --version | shasum -a 256 | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@v4
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ~/.cargo/registry
@@ -50,7 +52,7 @@ jobs:
         run: |
           export RB_BUILD_TIMESTAMP="$(git show -s --format=%cI HEAD)"
           cargo build --locked --release --bin rb
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .upstream-metadata
           key: upstream-metadata-v1-${{ github.run_id }}-${{ github.run_attempt }}
@@ -70,12 +72,12 @@ jobs:
           test -f candidates/report.json
           cat candidates/summary.md >> "$GITHUB_STEP_SUMMARY"
           echo "changed=$(jq '.updated | length > 0' candidates/report.json)" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache/save@v4
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: always() && steps.discovery.outcome != 'skipped' && github.ref == 'refs/heads/main'
         with:
           path: .upstream-metadata
           key: upstream-metadata-v1-${{ github.run_id }}-${{ github.run_attempt }}
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: upstream-candidates
@@ -96,24 +98,26 @@ jobs:
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: tale/rootbeer
           ref: ${{ vars.ROOTBEER_REV }}
           path: engine
           persist-credentials: false
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: upstream-candidates
           path: candidates
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de # master
+        with:
+          toolchain: stable
       - name: Identify Rust toolchain
         id: rust
         run: echo "version=$(rustc --version | shasum -a 256 | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@v4
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ~/.cargo/registry
@@ -136,7 +140,7 @@ jobs:
             rustc --version --verbose
           } > "$RUNNER_TEMP/package-environment"
           echo "digest=$(shasum -a 256 "$RUNNER_TEMP/package-environment" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .package-results
           key: results-v1-${{ matrix.runner }}-${{ vars.ROOTBEER_REV }}-${{ steps.package-environment.outputs.digest }}-${{ github.run_id }}-${{ github.run_attempt }}
@@ -150,12 +154,12 @@ jobs:
           engine/target/release/rb package --catalog candidates/recipes export \
             --registry tale/rootbeer-index --output result \
             --cache .package-results --cache-context "$CACHE_CONTEXT"
-      - uses: actions/cache/save@v4
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: github.ref == 'refs/heads/main'
         with:
           path: .package-results
           key: results-v1-${{ matrix.runner }}-${{ vars.ROOTBEER_REV }}-${{ steps.package-environment.outputs.digest }}-${{ github.run_id }}-${{ github.run_attempt }}
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: qualified-${{ matrix.runner }}
           path: result/
