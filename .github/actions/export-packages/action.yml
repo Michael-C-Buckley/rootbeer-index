@@ -1,0 +1,57 @@
+name: Export packages
+description: Build and qualify packages, reusing verified results for the same engine and environment.
+inputs:
+  revision:
+    description: Full Rootbeer commit SHA used to build the engine
+    required: true
+  runner:
+    description: Runner image label used by the job
+    required: true
+  catalog:
+    description: Directory containing package definitions
+    default: packages
+  recheck:
+    description: Rebuild and recheck every package
+    default: "false"
+runs:
+  using: composite
+  steps:
+    - name: Identify package build environment
+      id: environment
+      shell: bash
+      run: |
+        : "${ImageOS:?}" "${ImageVersion:?}" "${RUNNER_ARCH:?}"
+        {
+          printf '%s\n' "$ImageOS" "$ImageVersion" "$RUNNER_ARCH"
+          cc --version
+          make --version
+          rustc --version --verbose
+        } > "$RUNNER_TEMP/package-environment"
+        echo "digest=$(shasum -a 256 "$RUNNER_TEMP/package-environment" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+    - name: Restore verified package results
+      id: cache
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: .package-results
+        key: results-v1-${{ inputs.runner }}-${{ inputs.revision }}-${{ steps.environment.outputs.digest }}-${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: |
+          results-v1-${{ inputs.runner }}-${{ inputs.revision }}-${{ steps.environment.outputs.digest }}-
+    - name: Build, test, and export recipes
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        CACHE_CONTEXT: ${{ steps.environment.outputs.digest }}
+        SHOULD_RECHECK: ${{ inputs.recheck }}
+        CATALOG: ${{ inputs.catalog }}
+      run: |
+        options=()
+        if [ "$SHOULD_RECHECK" = true ]; then options+=(--recheck); fi
+        engine/target/release/rb package --catalog "$CATALOG" export \
+          --registry tale/rootbeer-index --output result \
+          --cache .package-results --cache-context "$CACHE_CONTEXT" "${options[@]}"
+    - name: Save verified package results
+      if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: .package-results
+        key: ${{ steps.cache.outputs.cache-primary-key }}
