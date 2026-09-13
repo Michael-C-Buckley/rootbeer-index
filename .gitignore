@@ -9,3 +9,6 @@ __pycache__/
 *.pem
 
 .package-results/
+
+.upstream-metadata/
+candidates/

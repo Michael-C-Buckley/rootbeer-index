@@ -1,0 +1,163 @@
+name: Upstream discovery
+on:
+  push:
+    branches: [main]
+    paths: ["upstreams/**", ".github/workflows/discovery.yml"]
+  workflow_dispatch:
+  schedule:
+    - cron: "13 7 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: discovery-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      changed: ${{ steps.report.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Require a pinned package engine
+        env:
+          ENGINE_REV: ${{ vars.ROOTBEER_REV }}
+        run: '[[ "$ENGINE_REV" =~ ^[0-9a-f]{40}$ ]]'
+      - uses: actions/checkout@v6
+        with:
+          repository: tale/rootbeer
+          ref: ${{ vars.ROOTBEER_REV }}
+          path: engine
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Identify Rust toolchain
+        id: rust
+        run: echo "version=$(rustc --version | shasum -a 256 | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            engine/target
+          key: engine-verify-v1-ubuntu-24.04-${{ steps.rust.outputs.version }}-${{ vars.ROOTBEER_REV }}-${{ hashFiles('engine/Cargo.lock') }}
+      - name: Build discovery engine
+        working-directory: engine
+        run: |
+          export RB_BUILD_TIMESTAMP="$(git show -s --format=%cI HEAD)"
+          cargo build --locked --release --bin rb
+      - uses: actions/cache/restore@v4
+        with:
+          path: .upstream-metadata
+          key: upstream-metadata-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: upstream-metadata-v1-
+      - name: Discover updates
+        id: discovery
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          engine/target/release/rb package --catalog recipes updates \
+            --upstreams upstreams --cache .upstream-metadata --output candidates
+      - name: Summarize candidates and exceptions
+        id: report
+        if: always()
+        run: |
+          test -f candidates/report.json
+          cat candidates/summary.md >> "$GITHUB_STEP_SUMMARY"
+          echo "changed=$(jq '.updated | length > 0' candidates/report.json)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache/save@v4
+        if: always() && steps.discovery.outcome != 'skipped' && github.ref == 'refs/heads/main'
+        with:
+          path: .upstream-metadata
+          key: upstream-metadata-v1-${{ github.run_id }}-${{ github.run_attempt }}
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: upstream-candidates
+          path: candidates/
+          retention-days: 14
+          if-no-files-found: error
+      - name: Surface discovery failures
+        if: steps.discovery.outcome == 'failure'
+        run: exit 1
+
+  qualify:
+    needs: discover
+    if: always() && needs.discover.outputs.changed == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm, macos-15, macos-15-intel]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          repository: tale/rootbeer
+          ref: ${{ vars.ROOTBEER_REV }}
+          path: engine
+          persist-credentials: false
+      - uses: actions/download-artifact@v6
+        with:
+          name: upstream-candidates
+          path: candidates
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Identify Rust toolchain
+        id: rust
+        run: echo "version=$(rustc --version | shasum -a 256 | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            engine/target
+          key: engine-verify-v1-${{ matrix.runner }}-${{ steps.rust.outputs.version }}-${{ vars.ROOTBEER_REV }}-${{ hashFiles('engine/Cargo.lock') }}
+      - name: Build package engine
+        working-directory: engine
+        run: |
+          export RB_BUILD_TIMESTAMP="$(git show -s --format=%cI HEAD)"
+          cargo build --locked --release --bin rb
+      - name: Identify package build environment
+        id: package-environment
+        run: |
+          : "${ImageOS:?}" "${ImageVersion:?}" "${RUNNER_ARCH:?}"
+          {
+            printf '%s\n' "$ImageOS" "$ImageVersion" "$RUNNER_ARCH"
+            cc --version
+            make --version
+            rustc --version --verbose
+          } > "$RUNNER_TEMP/package-environment"
+          echo "digest=$(shasum -a 256 "$RUNNER_TEMP/package-environment" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache/restore@v4
+        with:
+          path: .package-results
+          key: results-v1-${{ matrix.runner }}-${{ vars.ROOTBEER_REV }}-${{ steps.package-environment.outputs.digest }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            results-v1-${{ matrix.runner }}-${{ vars.ROOTBEER_REV }}-${{ steps.package-environment.outputs.digest }}-
+      - name: Qualify changed packages
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          CACHE_CONTEXT: ${{ steps.package-environment.outputs.digest }}
+        run: |
+          engine/target/release/rb package --catalog candidates/recipes export \
+            --registry tale/rootbeer-index --output result \
+            --cache .package-results --cache-context "$CACHE_CONTEXT"
+      - uses: actions/cache/save@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          path: .package-results
+          key: results-v1-${{ matrix.runner }}-${{ vars.ROOTBEER_REV }}-${{ steps.package-environment.outputs.digest }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - uses: actions/upload-artifact@v6
+        with:
+          name: qualified-${{ matrix.runner }}
+          path: result/
+          retention-days: 14
+          if-no-files-found: error

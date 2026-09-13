@@ -107,7 +107,40 @@ artifacts retain upstream availability requirements.
 
 ## Bootstrap status
 
-Recipes are initially copied from Rootbeer's embedded fallback catalog. Until the
-release endpoint is enabled, keep that fallback synchronized deliberately. Nothing
-has been published yet; engine pin, signing credentials, public package visibility,
-and Pages configuration are deployment setup, not recipe contributions.
+The signed index is published through GitHub Pages, with source-built archives in
+GHCR. Rootbeer's embedded fallback remains a smaller collection. Discovery and
+recipe publication use a pinned engine independently of Rootbeer releases.
+
+## Upstream discovery
+
+`upstreams/*.lua` records each canonical GitHub project, its repository ID, release
+rules, asset patterns, and checks. Definitions are authoring inputs, separate from
+published recipes. Existing GitHub packages and every new binary package should
+have one; XZ remains a source recipe and is explicitly untracked by this scanner.
+
+```sh
+rb package --catalog recipes updates --upstreams upstreams \
+  --cache .upstream-metadata --output candidates
+```
+
+The daily/manual `Upstream discovery` workflow uses cached conditional requests,
+produces one job summary plus `report.json`, and uploads candidates for 14 days.
+It checks only changed packages on all four platforms, reusing the same verified
+results as publication CI. An unchanged scan starts no platform jobs. Discovery
+errors fail the run after reporting all projects; successful candidates can still
+be qualified. No publication secrets or write permissions are granted.
+
+Download the `upstream-candidates` artifact and inspect its base catalog digest,
+version defaults, and all qualification jobs. If the catalog changed since the
+scan, rerun discovery. Copy reviewed files from its `recipes/` and `upstreams/`
+into the repository, then run the normal catalog checks. A recipe push still runs
+complete publication validation and creates the signed snapshot. Discovery itself
+never publishes or commits changes.
+
+Before activating this workflow, set `ROOTBEER_REV` to a tested Rootbeer commit
+that includes `package updates` and `package seed-upstreams`. Commit/push the
+engine first, verify its CI, update the pin, then enable the discovery workflow. Cache entries are trusted authoring
+inputs, not independently signed metadata; only main workflow runs save them.
+
+The current expansion adds bat, duf, dust, hyperfine, just, lazygit, sd, starship,
+yq, and zoxide. These remain candidates until all declared platform jobs pass.

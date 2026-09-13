@@ -40,3 +40,14 @@ extract crates when their dependencies can point in one direction.
 
 After publication, migrate the covered declarations to canonical names. Keep the
 remaining Brew/Aqua declarations until their replacements pass qualification.
+
+## Additional CLI coverage
+
+The catalog now contains 25 canonical packages: the original 15 above plus bat,
+duf, dust, hyperfine, just, lazygit, sd, starship, yq, and zoxide. All ten new
+recipes declare Linux/macOS on ARM64 and x86-64, with explicit upstream assets
+and saved update rules. The original Brew replacement gaps remain unchanged.
+
+Upstream discovery also advances age to 1.3.2 and mise to 2026.9.6 while retaining
+their previous recipes. Local checks qualify Apple Silicon; the new versions and
+packages still require the four-platform CI gate before publication.
