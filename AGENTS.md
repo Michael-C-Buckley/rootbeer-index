@@ -23,5 +23,8 @@ Do as little CI work as possible: reuse verified package results when their
 recipe, dependency recipes, platform, engine, and build environment are unchanged.
 Keep full qualification available for scheduled and explicit rechecks.
 
-Keep discovery rules in each package's `upstream` block. Inherit identity, commands,
-and checks from the package; do not create separate upstream definition files.
+Use compact package definitions: a shared `source` or `build`, shared `bins` and
+`checks`, and exact `versions` containing only revisions, checksums, or exceptions.
+GitHub `source` settings also drive discovery; do not duplicate them in `upstream`.
+Shared-field changes affect retained versions: use version overrides or increment
+each affected recipe revision. Compare expanded `rb package index` output when editing.

@@ -114,11 +114,15 @@ recipe publication use a pinned engine independently of Rootbeer releases.
 ## Upstream discovery
 
 `packages/<name>.lua` owns the complete package: canonical identity, exact version
-recipes, and an optional `upstream` block. GitHub update rules record the repository
-and ID, tag filters, and asset patterns. Commands, checks, and identity come from
-the package itself; platforms are inherited unless `upstream.systems` narrows them.
+recipes, and a shared `source` or `build`. GitHub `source` settings define the repository
+and ID, tag template, filters, and asset patterns for both versions and discovery.
+Commands and checks are declared once. Versions contain only revisions, checksums,
+or exceptions; `source.update_systems` can narrow discovery.
 Update rules are validated but excluded from signed snapshots and build fingerprints.
-XZ has no update rules and is explicitly untracked by this scanner.
+Source builds remain untracked by GitHub discovery. Set `source.track = false` to
+opt out for a GitHub binary package. See the [authoring API](https://rootbeer.tale.me/contributing/packaging)
+for inheritance and template rules. Expanded catalog data stays exact; changing
+shared defaults requires reviewing every affected retained version.
 
 ```sh
 rb package --catalog packages updates \
@@ -141,7 +145,7 @@ complete publication validation and creates the signed snapshot. Discovery itsel
 never publishes or commits changes.
 
 Before activating this workflow, set `ROOTBEER_REV` to a tested Rootbeer commit
-that supports unified package definitions and `package updates --catalog packages`. Commit/push the
+that supports compact package definitions and `package updates --catalog packages`. Commit/push the
 engine first, verify its CI, update the pin, then enable the discovery workflow. Cache entries are trusted authoring
 inputs, not independently signed metadata; only main workflow runs save them.
 
