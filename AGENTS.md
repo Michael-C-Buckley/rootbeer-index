@@ -1,10 +1,10 @@
 # Rootbeer index
 
-Recipes live in `recipes/*.lua`. Use canonical lowercase names and exact upstream
+Package definitions live in `packages/*.lua`. Use canonical lowercase names and exact upstream
 versions. Increment revisions when changing an existing recipe. Do not edit generated
 indexes or add hand-written checksums without verifying the upstream bytes.
 
-Run `rb package --catalog recipes check` and `rb package --catalog recipes export
+Run `rb package --catalog packages check` and `rb package --catalog packages export
 --registry tale/rootbeer-index --output result`. Tests for these commands live in
 the Rootbeer engine repository.
 Declare only platforms that the workflow can test. Source builds execute trusted
@@ -22,3 +22,6 @@ Keep explicit version requests exact and retain older recipes for existing locks
 Do as little CI work as possible: reuse verified package results when their
 recipe, dependency recipes, platform, engine, and build environment are unchanged.
 Keep full qualification available for scheduled and explicit rechecks.
+
+Keep discovery rules in each package's `upstream` block. Inherit identity, commands,
+and checks from the package; do not create separate upstream definition files.

@@ -2,7 +2,7 @@ name: Upstream discovery
 on:
   push:
     branches: [main]
-    paths: ["upstreams/**", ".github/workflows/discovery.yml"]
+    paths: ["packages/**", ".github/workflows/discovery.yml"]
   workflow_dispatch:
   schedule:
     - cron: "13 7 * * *"
@@ -63,8 +63,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          engine/target/release/rb package --catalog recipes updates \
-            --upstreams upstreams --cache .upstream-metadata --output candidates
+          engine/target/release/rb package --catalog packages updates \
+            --cache .upstream-metadata --output candidates
       - name: Summarize candidates and exceptions
         id: report
         if: always()
@@ -151,7 +151,11 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           CACHE_CONTEXT: ${{ steps.package-environment.outputs.digest }}
         run: |
-          engine/target/release/rb package --catalog candidates/recipes export \
+          mkdir changed-packages
+          jq -r '.updated[]' candidates/report.json | while IFS= read -r name; do
+            cp "candidates/packages/$name.lua" changed-packages/
+          done
+          engine/target/release/rb package --catalog changed-packages export \
             --registry tale/rootbeer-index --output result \
             --cache .package-results --cache-context "$CACHE_CONTEXT"
       - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0

@@ -3,7 +3,7 @@
 Canonical Lua recipes, native platform checks, and signed catalog publication.
 Rootbeer binaries and their release history stay in `tale/rootbeer`.
 
-- `recipes/`: canonical identities and exact source/backend recipes.
+- `packages/`: one Lua file per package, with identity, versions, and update rules.
 - `rb package export`: build or resolve packages, check commands and offline replay,
   then export a platform index. GitHub imports keep their locked upstream URLs.
 - `rb package assemble`: merge platform outputs and require complete coverage.
@@ -19,8 +19,8 @@ recipe `assets` support. Update `ROOTBEER_REV` to that engine commit before
 publishing these recipes:
 
 ```sh
-rb package --catalog recipes check
-rb package --catalog recipes export --registry tale/rootbeer-index --output result
+rb package --catalog packages check
+rb package --catalog packages export --registry tale/rootbeer-index --output result
 ```
 
 The workflow tests macOS 15 and Ubuntu 24.04 on ARM and Intel. It checks package
@@ -53,7 +53,7 @@ Every Monday and on manual dispatch with `recheck` enabled, CI checks every reci
 again and refreshes successful cache entries. Locally:
 
 ```sh
-rb package --catalog recipes export --registry tale/rootbeer-index --output result \
+rb package --catalog packages export --registry tale/rootbeer-index --output result \
   --cache /tmp/rootbeer-package-results --cache-context "$BUILD_ENVIRONMENT_ID"
 ```
 
@@ -113,13 +113,15 @@ recipe publication use a pinned engine independently of Rootbeer releases.
 
 ## Upstream discovery
 
-`upstreams/*.lua` records each canonical GitHub project, its repository ID, release
-rules, asset patterns, and checks. Definitions are authoring inputs, separate from
-published recipes. Existing GitHub packages and every new binary package should
-have one; XZ remains a source recipe and is explicitly untracked by this scanner.
+`packages/<name>.lua` owns the complete package: canonical identity, exact version
+recipes, and an optional `upstream` block. GitHub update rules record the repository
+and ID, tag filters, and asset patterns. Commands, checks, and identity come from
+the package itself; platforms are inherited unless `upstream.systems` narrows them.
+Update rules are validated but excluded from signed snapshots and build fingerprints.
+XZ has no update rules and is explicitly untracked by this scanner.
 
 ```sh
-rb package --catalog recipes updates --upstreams upstreams \
+rb package --catalog packages updates \
   --cache .upstream-metadata --output candidates
 ```
 
@@ -132,13 +134,14 @@ be qualified. No publication secrets or write permissions are granted.
 
 Download the `upstream-candidates` artifact and inspect its base catalog digest,
 version defaults, and all qualification jobs. If the catalog changed since the
-scan, rerun discovery. Copy reviewed files from its `recipes/` and `upstreams/`
-into the repository, then run the normal catalog checks. A recipe push still runs
+scan, rerun discovery. Copy reviewed files from its `packages/` directory into
+the repository's `packages/`, then run the normal catalog checks. Metadata-only
+candidates also contain a complete package file; only `report.updated` needs qualification. A recipe push still runs
 complete publication validation and creates the signed snapshot. Discovery itself
 never publishes or commits changes.
 
 Before activating this workflow, set `ROOTBEER_REV` to a tested Rootbeer commit
-that includes `package updates` and `package seed-upstreams`. Commit/push the
+that supports unified package definitions and `package updates --catalog packages`. Commit/push the
 engine first, verify its CI, update the pin, then enable the discovery workflow. Cache entries are trusted authoring
 inputs, not independently signed metadata; only main workflow runs save them.
 
