@@ -8,24 +8,22 @@ Existing snapshots, receipts, archives, package versions, and locks remain valid
 
 The retirement removes Intel targets from active recipes and increments every
 affected revision. No package or version is removed. The three-platform catalog
-publishes to `current.json` after qualification; the baseline below records the
-last publication before retirement.
+is published through `current.json`. The frozen Intel catalog and final client
+remain available through their existing URLs.
 
 ## Published baseline
 
-106 packages passed the native platform gates and were published by
-[run 34860848939](https://github.com/tale/rootbeer-index/actions/runs/34860848939)
-from commit `ec6f716`. All 32 qualification shards, assembly, and publication
-passed. One shard needed a rerun after GitHub returned HTTP 500 for Stern.
-[Upstream discovery](https://github.com/tale/rootbeer-index/actions/runs/34860848722)
-also passed: two update candidates, 100 unchanged packages, and zero errors.
-Candidates remain separate from the published catalog until reviewed.
+106 packages passed the three-platform gates and were published by
+[run 34869517800](https://github.com/tale/rootbeer-index/actions/runs/34869517800)
+from commit `4374a9c`. All 24 qualification shards, assembly, and publication
+passed without reruns. [Upstream discovery](https://github.com/tale/rootbeer-index/actions/runs/34869517703)
+also passed. Update candidates remain separate until reviewed.
 
-Support follows each recipe: gmx is macOS-only, and choose has no Intel macOS
-binary in its published release history. The other packages from the previous
-expansion declare macOS and Linux on ARM64 and x86-64. Native command checks and
-offline reconstruction verify installation; they do not establish that every
-interactive interface or external integration works.
+Fresh signed-index checks verified jq and Rush online and offline through
+`current.json`. The final Intel-compatible `latest-v2.json` is byte-for-byte
+unchanged. Active support follows each recipe: gmx and Bobrwm are macOS ARM64-only;
+Monstar is Linux x86-64-only. Native checks and offline reconstruction do not
+establish that every interactive interface or external integration works.
 
 ## Current batch
 
@@ -34,10 +32,10 @@ This batch is published, with every declared platform qualified:
 | Package | Version | Platforms | Notes |
 | --- | --- | --- | --- |
 | bobrwm | 0.1.0-main+572265d | macOS ARM64 | Pinned tip artifact; complete signed app bundle mirrored. |
-| prtui | 0.3.0 | All four | Requires Git and authenticated GitHub CLI; Linux needs glibc 2.35+. |
-| rush | 0.1.0-dev.20260909+g294212ebd35f5b755062186a66bcfd6436d3627a | All four | Pinned source snapshot built with Zig 0.16.0; patched version and executable-relative runtime data. |
+| prtui | 0.3.0 | All three | Requires Git and authenticated GitHub CLI; Linux needs glibc 2.35+. |
+| rush | 0.1.0-dev.20260909+g294212ebd35f5b755062186a66bcfd6436d3627a | All three | Pinned source snapshot built with Zig 0.16.0; patched version and executable-relative runtime data. |
 | monstar | 1.0.1 | Linux x86-64 | Requires Wayland, glibc 2.36+, and the libraries below. |
-| zig | 0.16.0 | All four | Complete compiler distribution; also builds Rush in CI. |
+| zig | 0.16.0 | All three | Complete compiler distribution; also builds Rush in CI. |
 
 Prise is deprecated and excluded. Rush snapshots and Bobrwm tip artifacts require
 manual intake with pinned sources; discovery does not silently follow their heads.
