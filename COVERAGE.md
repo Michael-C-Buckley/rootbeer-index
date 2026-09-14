@@ -2,14 +2,13 @@
 
 ## Supported platforms
 
-Active support covers macOS ARM64 and Linux ARM64/x86-64. Intel macOS is retired;
-its final client and signed `latest-v2.json` catalog are frozen and retained.
-Existing snapshots, receipts, archives, package versions, and locks remain valid.
+Active support covers macOS ARM64 and Linux ARM64/x86-64 through `current.json`.
+Intel macOS is unsupported; the retired binary and frozen catalog channel are no longer
+served. Existing immutable snapshots, receipts, and archives are retained.
 
-The retirement removes Intel targets from active recipes and increments every
-affected revision. No package or version is removed. The three-platform catalog
-is published through `current.json`. The frozen Intel catalog and final client
-remain available through their existing URLs.
+CI uses one job per supported platform. Each builds the engine and exports with
+`--workers 2 --jobs 2`, saving verified results even when another package fails.
+Assembly requires complete declared coverage before publication.
 
 ## Published baseline
 
@@ -20,8 +19,7 @@ passed without reruns. [Upstream discovery](https://github.com/tale/rootbeer-ind
 also passed. Update candidates remain separate until reviewed.
 
 Fresh signed-index checks verified jq and Rush online and offline through
-`current.json`. The final Intel-compatible `latest-v2.json` is byte-for-byte
-unchanged. Active support follows each recipe: gmx and Bobrwm are macOS ARM64-only;
+`current.json`. Active support follows each recipe: gmx and Bobrwm are macOS ARM64-only;
 Monstar is Linux x86-64-only. Native checks and offline reconstruction do not
 establish that every interactive interface or external integration works.
 
@@ -56,11 +54,10 @@ functions, and the exact snapshot version after installation and offline recover
 
 Live signed-index checks passed for prtui, Bobrwm, and Rush: one-off execution,
 offline reuse, persistent installation, and Rush function autoload through profile
-symlinks. The previous public client still installs jq from its unchanged endpoint.
+symlinks.
 
-This batch originally published through `latest-v2.json`, now frozen for retired
-Intel clients. New active-platform revisions publish through `current.json`. The existing `latest.json` and immutable
-history remain available to older clients; upgrade Rootbeer for this batch.
+This batch originally published through `latest-v2.json`. Active-platform revisions
+now publish through `current.json`; upgrade Rootbeer to use the current catalog.
 
 ## Added packages
 
@@ -104,7 +101,7 @@ offline, and persistent installation retained the earlier batch.
    unresolved engine gaps in the shortlist; fix them before expanding the batch.
 3. Run native functional checks and offline reconstruction with isolated homes
    and profiles. Require CI checks on every declared macOS/Linux architecture
-   before publishing; ARM64 qualification does not establish Intel support.
+   before publishing.
 4. Publish only the verified bundle, then verify the signed index through a
    client run and installation. Update this baseline after that succeeds; only
    then migrate the corresponding dotfile declarations.

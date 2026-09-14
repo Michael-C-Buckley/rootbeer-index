@@ -23,7 +23,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  engine:
+  verify:
     if: github.event.repository.private == false
     strategy:
       fail-fast: false
@@ -39,45 +39,20 @@ jobs:
         with:
           revision: ${{ vars.ROOTBEER_REV }}
           runner: ${{ matrix.runner }}
+      - uses: ./.github/actions/export-packages
+        with:
+          revision: ${{ vars.ROOTBEER_REV }}
+          runner: ${{ matrix.runner }}
+          recheck: ${{ github.event_name == 'schedule' || inputs.recheck == true }}
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: engine-${{ matrix.runner }}
           path: engine/target/release/rb
           retention-days: 2
           if-no-files-found: error
-
-  verify:
-    needs: engine
-    strategy:
-      fail-fast: false
-      matrix:
-        runner: [ubuntu-24.04, ubuntu-24.04-arm, macos-15]
-        shard: [0, 1, 2, 3, 4, 5, 6, 7]
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 45
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de # master
-        with:
-          toolchain: stable
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: engine-${{ matrix.runner }}
-          path: engine-bin
-      - run: chmod +x engine-bin/rb
-      - uses: ./.github/actions/export-packages
-        with:
-          revision: ${{ vars.ROOTBEER_REV }}
-          runner: ${{ matrix.runner }}
-          engine: engine-bin/rb
-          shard: ${{ matrix.shard }}
-          shards: 8
-          recheck: ${{ github.event_name == 'schedule' || inputs.recheck == true }}
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: packages-${{ matrix.runner }}-${{ matrix.shard }}
+          name: packages-${{ matrix.runner }}
           path: result/
           retention-days: 2
           if-no-files-found: error
