@@ -2,11 +2,13 @@
 
 ## Published baseline
 
-101 packages passed the native platform gates and were published by
-[run 34807114915](https://github.com/tale/rootbeer-index/actions/runs/34807114915)
-from commit `9a87da4`. All 32 qualification shards, assembly, and publication
-passed. [Upstream discovery](https://github.com/tale/rootbeer-index/actions/runs/34806611251)
-also passed with zero errors.
+106 packages passed the native platform gates and were published by
+[run 34860848939](https://github.com/tale/rootbeer-index/actions/runs/34860848939)
+from commit `ec6f716`. All 32 qualification shards, assembly, and publication
+passed. One shard needed a rerun after GitHub returned HTTP 500 for Stern.
+[Upstream discovery](https://github.com/tale/rootbeer-index/actions/runs/34860848722)
+also passed: two update candidates, 100 unchanged packages, and zero errors.
+Candidates remain separate from the published catalog until reviewed.
 
 Support follows each recipe: gmx is macOS-only, and choose has no Intel macOS
 binary in its published release history. The other packages from the previous
@@ -14,9 +16,9 @@ expansion declare macOS and Linux on ARM64 and x86-64. Native command checks and
 offline reconstruction verify installation; they do not establish that every
 interactive interface or external integration works.
 
-## Current candidates
+## Current batch
 
-This batch awaits qualification on every declared platform:
+This batch is published, with every declared platform qualified:
 
 | Package | Version | Platforms | Notes |
 | --- | --- | --- | --- |
@@ -42,6 +44,10 @@ libxkbcommon, and installed fonts. Rootbeer does not install these system librar
 Rush passed its upstream tests and relocated shell/function-autoload checks on
 macOS ARM64. Package checks exercise quoting, substitution, arithmetic, bundled
 functions, and the exact snapshot version after installation and offline recovery.
+
+Live signed-index checks passed for prtui, Bobrwm, and Rush: one-off execution,
+offline reuse, persistent installation, and Rush function autoload through profile
+symlinks. The previous public client still installs jq from its unchanged endpoint.
 
 The new catalog uses `latest-v2.json`. The existing `latest.json` and immutable
 history remain available to older clients; upgrade Rootbeer for this batch.

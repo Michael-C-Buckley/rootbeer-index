@@ -42,6 +42,8 @@ runs:
           ~/.cargo/git
           engine/target
         key: engine-${{ inputs.cache-scope }}-v1-${{ inputs.runner }}-${{ steps.rust.outputs.version }}-${{ inputs.revision }}-${{ hashFiles('engine/Cargo.lock') }}
+        restore-keys: |
+          engine-${{ inputs.cache-scope }}-v1-${{ inputs.runner }}-${{ steps.rust.outputs.version }}-
     - name: Build package engine
       shell: bash
       working-directory: engine
