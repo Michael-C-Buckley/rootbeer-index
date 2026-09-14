@@ -10,6 +10,15 @@ inputs:
   catalog:
     description: Directory containing package definitions
     default: packages
+  engine:
+    description: Path to the package engine executable
+    default: engine/target/release/rb
+  shard:
+    description: Zero-based recipe shard; leave empty to export the whole catalog
+    default: ""
+  shards:
+    description: Total recipe shards
+    default: "1"
   recheck:
     description: Rebuild and recheck every package
     default: "false"
@@ -33,9 +42,9 @@ runs:
       uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: .package-results
-        key: results-v1-${{ inputs.runner }}-${{ inputs.revision }}-${{ steps.environment.outputs.digest }}-${{ github.run_id }}-${{ github.run_attempt }}
+        key: results-v2-${{ inputs.runner }}-shard-${{ inputs.shard || 'all' }}-of-${{ inputs.shards }}-${{ inputs.revision }}-${{ steps.environment.outputs.digest }}-${{ github.run_id }}-${{ github.run_attempt }}
         restore-keys: |
-          results-v1-${{ inputs.runner }}-${{ inputs.revision }}-${{ steps.environment.outputs.digest }}-
+          results-v2-${{ inputs.runner }}-shard-${{ inputs.shard || 'all' }}-of-${{ inputs.shards }}-${{ inputs.revision }}-${{ steps.environment.outputs.digest }}-
     - name: Build, test, and export recipes
       shell: bash
       env:
@@ -43,10 +52,14 @@ runs:
         CACHE_CONTEXT: ${{ steps.environment.outputs.digest }}
         SHOULD_RECHECK: ${{ inputs.recheck }}
         CATALOG: ${{ inputs.catalog }}
+        ENGINE: ${{ inputs.engine }}
+        SHARD: ${{ inputs.shard }}
+        SHARDS: ${{ inputs.shards }}
       run: |
         options=()
         if [ "$SHOULD_RECHECK" = true ]; then options+=(--recheck); fi
-        engine/target/release/rb package --catalog "$CATALOG" export \
+        if [ -n "$SHARD" ]; then options+=(--shard "$SHARD" --shards "$SHARDS"); fi
+        "$ENGINE" package --catalog "$CATALOG" export \
           --registry tale/rootbeer-index --output result \
           --cache .package-results --cache-context "$CACHE_CONTEXT" "${options[@]}"
     - name: Save verified package results
