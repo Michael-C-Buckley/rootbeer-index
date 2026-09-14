@@ -12,11 +12,11 @@ Assembly requires complete declared coverage before publication.
 
 ## Published baseline
 
-107 packages passed the three-platform gates and were published by
-[run 34896137195](https://github.com/tale/rootbeer-index/actions/runs/34896137195)
-from commit `ad44c47`, using engine `552938c`. All three platform jobs, assembly,
-and publication passed without reruns in 3m47s. Update candidates remain separate
-until reviewed.
+109 packages passed the three-platform gates and were published by
+[run 34904637298](https://github.com/tale/rootbeer-index/actions/runs/34904637298)
+from commit `8ceeacf`, using engine `04f2855`. All three platform jobs, assembly,
+and publication passed without reruns. Update candidates remain separate until
+reviewed.
 
 Earlier public-client checks verified jq and Rush online and offline through
 `current.json`, plus persistent installation with `rb use jq`. The retired Intel
@@ -137,15 +137,23 @@ offline, and persistent installation retained the earlier batch.
 
 ## Curl dependency work
 
-Engine `04f2855` adds static library dependencies and generic command build phases.
-Roll out the engine, clients, and website before publishing schema 4 recipes.
+Engine `04f2855` and the package website are deployed with schema 4 support for
+static library dependencies and generic command build phases. Existing clients
+need `rb update` before reading this catalog.
 
-`pkgconf` 3.0.7 is prepared but unpublished. Its upstream suite, relocation, and
-metadata resolution passed locally on macOS ARM64 and Linux ARM64/x86-64
-(x86-64 under emulation). The macOS Rootbeer export also passed offline
-reconstruction. Native CI qualification remains required on all three platforms.
+`pkgconf` 3.0.7 and OpenSSL 4.0.2 are published on all three platforms. Each passed
+its upstream suite, installed command checks, and offline reconstruction in
+native CI. The OpenSSL run reused 114 existing package/version results on macOS
+and 112 on Linux ARM64.
 
-Next: qualify OpenSSL, then curl's compression, HTTP/2, HTTP/3, SSH, and
+Public-nightly checks verified signed-index resolution, online/offline execution,
+persistent installation, and removal for both packages. On macOS, a consumer linked
+against the published OpenSSL static archives through pkgconf and verified SHA-256,
+default/legacy providers, and SRP API availability. The published executable also
+passed certificate generation and authenticated TLS 1.2/1.3 handshakes on localhost.
+The website's catalog loader verified both packages and OpenSSL's library exports.
+
+Next: zlib, Brotli, and Zstandard, followed by HTTP/2, HTTP/3, SSH, and
 platform-specific dependencies. Preserve the full curl feature target when
 qualifying the final binary, including certificate discovery and relocation.
 
