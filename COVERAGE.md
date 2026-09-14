@@ -1,96 +1,96 @@
 # CLI coverage
 
-The candidate catalog contains 97 packages: 25 existing packages, the previous
-22-package expansion, and another 50 additions. New recipes remain unpublished
-until the four-platform CI gate passes.
+## Published baseline
 
-## Previous 22-package batch
+97 packages passed the native platform gates and were published by
+[run 34794818699](https://github.com/tale/rootbeer-index/actions/runs/34794818699)
+from commit `96ee74badcb08311678fe541425b31f22798d471`.
 
-| Use | New packages |
-| --- | --- |
-| Tools already installed locally | agg, asciinema, gmx, opencode, rustic, stylua, tree-sitter, typst, uv, zmx |
-| Shell and workflow checks | actionlint, shellcheck |
-| Git and API tools | git-cliff, gitui, grpcurl |
-| Terminal and system tools | atuin, bottom (`btm`), dive, fastfetch, procs, watchexec, zellij |
+Support follows each recipe: gmx is macOS-only, and choose has no Intel macOS
+binary in its published release history. The other packages from the previous
+expansion declare macOS and Linux on ARM64 and x86-64. Native command checks and
+offline reconstruction verify installation; they do not establish that every
+interactive interface or external integration works.
 
-Recipes use exact upstream releases with verified repository IDs and explicit
-asset names. Discovery uses the same source settings. Existing versions and
-recipes are unchanged.
+## Current batch
 
-All additions declare macOS and Linux on ARM64 and x86-64 except gmx, whose
-upstream releases provide macOS binaries only. gmx is an integration for Ghostty
-and zmx: those tools must also be installed. Installing dive does not install a
-container engine. Runtime integrations need separate user setup; version/help
-checks do not establish that those integrations work.
+These four candidates exercise the corrected raw GitHub executable naming path.
+They are not part of the published baseline until their qualification and
+publication gates pass.
 
-All 22 additions passed native checks and offline reconstruction on macOS ARM64.
-All 21 Linux-supported additions passed the same checks in the isolated Ubuntu
-24.04 ARM64 OrbStack VM. The four-platform CI gate must pass before
-publication or migrating these new names into a user's configuration. Local
-qualification does not establish Intel support by itself.
+| Package | Command | Upstream |
+| --- | --- | --- |
+| shfmt | `shfmt` | `mvdan/sh` |
+| tealdeer | `tldr` | `tealdeer-rs/tealdeer` |
+| docker-compose | `docker-compose` | `docker/compose` |
+| argocd | `argocd` | `argoproj/argo-cd` |
 
-## Additional 50-package batch
+All four passed native macOS ARM64 checks and offline reconstruction. shfmt also
+passed a formatting check, and Compose validated a sample configuration without
+a daemon. The four-platform CI gate is pending.
 
-| Use | Packages |
-| --- | --- |
-| Development tools | air, buf, caddy, dasel, dprint, glow, golangci-lint, goose, goreleaser, gum, lefthook, migrate, mockery, nats, sqlc, task |
-| Containers and Kubernetes | cosign, devspace, flux, grype, helmfile, hubble, k9s, kind, kompose, lazydocker, minikube, oras, skaffold, stern, syft, tilt, trivy |
-| Terminal utilities | argc, bandwhich, choose, doggo, dufs, gping, grex, hexyl, intermodal, miniserve, oha, ouch, pastel, topgrade, vivid, xh, yazi |
+Compose needs a container engine; Argo CD needs the relevant cluster or service
+for remote operations. Installing the clients does not provision those systems.
 
-All 50 additions passed native macOS ARM64 and Linux ARM64 command checks and
-offline reconstruction. Each exported recipe was compared with the final catalog.
-Intel execution remains for CI. Choose has no Intel macOS binary in its published
-release history; its recipe declares the other three platforms.
-Yazi also exports `ya`. Checks use temporary homes and profiles without Homebrew
-on PATH. This verifies installation and command startup, not every external
-integration or interactive interface.
+## Package intake
 
-Some commands need separately installed tools or services:
+1. Collect demand from dotfile package lists and missing tools. Record the
+   canonical package, exported command, upstream, and the source list that needs
+   it. Deduplicate aliases and overlapping Brew, Mise, and Rootbeer declarations.
+2. Choose a small batch with exact releases and explicit platform assets. Keep
+   unresolved engine gaps in the shortlist; fix them before expanding the batch.
+3. Run native functional checks and offline reconstruction with isolated homes
+   and profiles. Require CI checks on every declared macOS/Linux architecture
+   before publishing; ARM64 qualification does not establish Intel support.
+4. Publish only the verified bundle, then verify the signed index through a
+   client run and installation. Update this baseline after that succeeds; only
+   then migrate the corresponding dotfile declarations.
+5. Keep upstream discovery settings with each recipe. Discovered releases go
+   through the same qualification and publication gates before becoming defaults.
 
-- Go build and code-generation tools need the project toolchain.
-- dprint needs formatting plugins selected in the user's configuration.
-- helmfile needs Helm; lazydocker needs Docker; kind and minikube need a driver.
+## Runtime dependencies
+
+- gmx integrates Ghostty and zmx; both must also be installed.
+- dive and lazydocker need a container engine; kind and minikube need a driver.
 - Kubernetes clients and NATS need the relevant cluster or service.
+- Go build and code-generation tools need the project toolchain.
+- dprint needs configured formatting plugins; helmfile needs Helm.
+- Yazi previews may need additional utilities. Yazi also exports `ya`.
 - topgrade updates other installed tools; installation does not run an upgrade.
-- Yazi preview features may need additional utilities.
-
-Candidates replaced during qualification:
-
-| Candidate | Reason |
-| --- | --- |
-| Hugo | The newest macOS release uses an unsupported `.pkg` installer. |
-| Docker Compose, Argo CD | Raw executable names differ from repository names, the same gap as shfmt. |
-| Crossplane, sniffer | Latest releases have no usable binary assets. |
-| Podman | Release artifacts provide remote clients rather than a complete local engine. |
-| eza | Current binary releases omit macOS. |
-| fselect | macOS ARM64 uses an unsupported standalone gzip artifact. |
-| qsv | Actual Linux installation failed because its ZIP provides no executable files recognizable by the current resolver. |
 
 ## Remaining shortlist
 
-The following 18 candidates are deferred or need investigation. They are not
-included in the new package count.
+These candidates remain deferred or need investigation.
 
 | Package | Next work |
 | --- | --- |
-| lua-language-server | Actual export failed: the launcher looks for `main.lua` beside the profile symlink. Preserve its runtime lookup through a supported launcher strategy. |
-| shfmt | Actual export failed: the raw GitHub backend exposes the repository name `sh`, not the declared `shfmt` command. Support explicit raw executable naming. |
-| tealdeer | Actual export failed: the raw download needs to expose `tldr`, not the repository name. Same naming gap as shfmt. |
-| tokei | Newest stable releases have no binaries; the last stable binary release, 12.1.2, lacks macOS ARM64. Assess source builds instead of silently choosing an old version. |
-| make | Revisit the earlier GNU Make 4.4.1 Darwin archive-test failure before admitting a source recipe. |
+| lua-language-server | The launcher looks for `main.lua` beside the profile symlink. Preserve runtime lookup through a supported launcher strategy. |
+| tokei | Newest stable releases have no binaries; the last stable binary release, 12.1.2, lacks macOS ARM64. Assess source builds rather than silently choosing an old version. |
+| make | Revisit the GNU Make 4.4.1 Darwin archive-test failure before admitting a source recipe. |
 | curl | Qualify TLS dependencies, certificate discovery, and relocatable libraries. |
 | git | Qualify dependencies, helper executables, and runtime data. |
 | wget | Qualify TLS dependencies and certificate discovery. |
 | rsync | Audit build dependencies and the portable feature set. |
 | telnet | Select an upstream implementation and qualify client-only builds. |
-| 1password-cli | Add support for verified vendor-hosted archives; retain the existing Aqua declaration for now. |
-| helm | Assess the vendor-hosted release archives and command checks. |
-| kubectl | Assess the vendor-hosted binaries and version-selection policy. |
+| 1password-cli | Support verified vendor-hosted archives; retain the existing Aqua declaration for now. |
+| helm | Assess vendor-hosted release archives and command checks. |
+| kubectl | Assess vendor-hosted binaries and version selection. |
 | gopls | Assess reproducible Go builds and language-server checks. |
 | goimports | Assess reproducible Go builds and formatting checks. |
 | rust-analyzer | Audit release selection and compatibility with the user's Rust toolchains. |
 | nmap | Audit dependencies and bundled runtime data. |
 | git-filter-repo | Audit Python runtime requirements and launcher behavior. |
+
+Other candidates rejected during the previous qualification pass:
+
+| Candidate | Reason |
+| --- | --- |
+| Hugo | The inspected macOS release uses an unsupported `.pkg` installer. |
+| Crossplane, sniffer | The inspected releases have no usable binary assets. |
+| Podman | Release artifacts provide remote clients rather than a complete local engine. |
+| eza | The inspected binary releases omit macOS. |
+| fselect | macOS ARM64 uses an unsupported standalone gzip artifact. |
+| qsv | Linux installation failed because its ZIP provides no executable files recognizable by the current resolver. |
 
 Language runtimes and npm-based language servers remain managed by Mise in this
 pass. Existing Brew dependencies and desktop applications remain installed.
