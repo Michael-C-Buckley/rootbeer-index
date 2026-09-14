@@ -2,9 +2,11 @@
 
 ## Published baseline
 
-97 packages passed the native platform gates and were published by
-[run 34794818699](https://github.com/tale/rootbeer-index/actions/runs/34794818699)
-from commit `96ee74badcb08311678fe541425b31f22798d471`.
+101 packages passed the native platform gates and were published by
+[run 34807114915](https://github.com/tale/rootbeer-index/actions/runs/34807114915)
+from commit `9a87da4`. All 32 qualification shards, assembly, and publication
+passed. [Upstream discovery](https://github.com/tale/rootbeer-index/actions/runs/34806611251)
+also passed with zero errors.
 
 Support follows each recipe: gmx is macOS-only, and choose has no Intel macOS
 binary in its published release history. The other packages from the previous
@@ -12,11 +14,10 @@ expansion declare macOS and Linux on ARM64 and x86-64. Native command checks and
 offline reconstruction verify installation; they do not establish that every
 interactive interface or external integration works.
 
-## Current batch
+## Added packages
 
-These four candidates exercise the corrected raw GitHub executable naming path.
-They are not part of the published baseline until their qualification and
-publication gates pass.
+These four tools are published, with installed command names taken from their
+recipes even when upstream repository and executable names differ.
 
 | Package | Command | Upstream |
 | --- | --- | --- |
@@ -27,21 +28,24 @@ publication gates pass.
 
 All four passed native macOS ARM64 checks and offline reconstruction. shfmt also
 passed a formatting check, and Compose validated a sample configuration without
-a daemon. The four-platform CI gate is pending.
+a daemon. All declared platforms passed CI. Live signed-index checks verified
+`rb run`, offline reuse, persistent `rb use`, and `rb env` in an isolated user
+profile without a Lua configuration.
 
 Compose needs a container engine; Argo CD needs the relevant cluster or service
 for remote operations. Installing the clients does not provision those systems.
 
-## Maintenance batch
+## Maintenance
 
-Candidate updates: chezmoi 2.72.2, lazygit 0.65.1, and mise 2026.9.7. Older
+Published updates: chezmoi 2.72.2, lazygit 0.65.1, and mise 2026.9.7. Older
 recipes are retained. gitui 0.28.1 revision 2 follows its move to
 `gitui-org/gitui`, verified against the unchanged repository ID.
 
 All eight retained/new recipes passed native macOS ARM64 checks and offline
 reconstruction. Discovery against the resulting 101-package catalog reported
-100 unchanged GitHub packages, zero errors, and xz untracked. Publication awaits
-the four-platform gate.
+100 unchanged GitHub packages, zero errors, and xz untracked. All declared
+platforms passed CI. Live client checks verified the updated versions online and
+offline, and persistent installation retained the earlier batch.
 
 ## Package intake
 
