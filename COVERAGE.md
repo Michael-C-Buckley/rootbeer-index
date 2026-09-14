@@ -1,4 +1,4 @@
-# CLI coverage
+# Package coverage
 
 ## Supported platforms
 
@@ -13,17 +13,24 @@ Assembly requires complete declared coverage before publication.
 ## Published baseline
 
 106 packages passed the three-platform gates and were published by
-[run 34872155873](https://github.com/tale/rootbeer-index/actions/runs/34872155873)
-from commit `c75e43a`, using engine `a6d01ce`. All three platform jobs, assembly,
-and publication passed without reruns in 7m47s with a new engine cache key.
-[Upstream discovery](https://github.com/tale/rootbeer-index/actions/runs/34872156231)
+[run 34877598089](https://github.com/tale/rootbeer-index/actions/runs/34877598089)
+from commit `efa7f01`, using engine `552938c`. All three platform jobs, assembly,
+and publication passed without reruns in 7m12s with a new engine cache key.
+[Upstream discovery](https://github.com/tale/rootbeer-index/actions/runs/34877598148)
 also passed. Update candidates remain separate until reviewed.
 
-Fresh public-client checks verified jq and Rush online and offline through
+Earlier public-client checks verified jq and Rush online and offline through
 `current.json`, plus persistent installation with `rb use jq`. The retired Intel
 binary and frozen `latest-v2.json` both return HTTP 404. Active support follows each recipe: gmx and Bobrwm are macOS ARM64-only;
 Monstar is Linux x86-64-only. Native checks and offline reconstruction do not
 establish that every interactive interface or external integration works.
+
+Bobrwm revision 2 exports `Bobrwm.app` through the schema 3 catalog. Fresh public-client
+checks verified temporary execution without an Applications link, persistent installation,
+shared user/Lua ownership, removal after the last owner, and offline reuse. The symlink
+resolves to the complete signed bundle; macOS metadata recognizes an application bundle
+and strict code-signature verification passes. GUI launch, Accessibility permission
+persistence across upgrades, and login items were not exercised.
 
 ## Current batch
 
