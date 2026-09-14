@@ -3,7 +3,7 @@ return {
     description = "Browse and manage Git repositories in the terminal",
     default_version = "0.28.1",
     source = {
-        github = "extrawurst/gitui",
+        github = "gitui-org/gitui",
         tag = "v{version}",
         repository_id = 247725846,
         assets = {
@@ -19,6 +19,6 @@ return {
         { "gitui", "--version" },
     },
     versions = {
-        ["0.28.1"] = {},
+        ["0.28.1"] = { revision = 2 },
     },
 }

@@ -1,7 +1,7 @@
 return {
     name = "mise",
     description = "Manage development tools and tasks",
-    default_version = "2026.9.6",
+    default_version = "2026.9.7",
     source = {
         github = "jdx/mise",
         tag = "v{version}",
@@ -21,6 +21,9 @@ return {
     versions = {
         ["2026.9.5"] = {},
         ["2026.9.6"] = {
+            systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux", "x86_64-macos" },
+        },
+        ["2026.9.7"] = {
             systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux", "x86_64-macos" },
         },
     },

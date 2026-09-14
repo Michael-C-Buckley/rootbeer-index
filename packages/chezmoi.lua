@@ -1,7 +1,7 @@
 return {
     name = "chezmoi",
     description = "Manage dotfiles across machines",
-    default_version = "2.72.1",
+    default_version = "2.72.2",
     source = {
         github = "twpayne/chezmoi",
         tag = "v{version}",
@@ -20,5 +20,8 @@ return {
     },
     versions = {
         ["2.72.1"] = {},
+        ["2.72.2"] = {
+            systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux", "x86_64-macos" },
+        },
     },
 }

@@ -32,6 +32,17 @@ a daemon. The four-platform CI gate is pending.
 Compose needs a container engine; Argo CD needs the relevant cluster or service
 for remote operations. Installing the clients does not provision those systems.
 
+## Maintenance batch
+
+Candidate updates: chezmoi 2.72.2, lazygit 0.65.1, and mise 2026.9.7. Older
+recipes are retained. gitui 0.28.1 revision 2 follows its move to
+`gitui-org/gitui`, verified against the unchanged repository ID.
+
+All eight retained/new recipes passed native macOS ARM64 checks and offline
+reconstruction. Discovery against the resulting 101-package catalog reported
+100 unchanged GitHub packages, zero errors, and xz untracked. Publication awaits
+the four-platform gate.
+
 ## Package intake
 
 1. Collect demand from dotfile package lists and missing tools. Record the
@@ -64,7 +75,7 @@ These candidates remain deferred or need investigation.
 
 | Package | Next work |
 | --- | --- |
-| lua-language-server | The launcher looks for `main.lua` beside the profile symlink. Preserve runtime lookup through a supported launcher strategy. |
+| lua-language-server | On macOS, execute its canonical binary path while preserving argv. Supply writable log/meta paths outside the store; even `--version` otherwise mutates it. Qualification must check diagnostics and unchanged store hashes. |
 | tokei | Newest stable releases have no binaries; the last stable binary release, 12.1.2, lacks macOS ARM64. Assess source builds rather than silently choosing an old version. |
 | make | Revisit the GNU Make 4.4.1 Darwin archive-test failure before admitting a source recipe. |
 | curl | Qualify TLS dependencies, certificate discovery, and relocatable libraries. |

@@ -1,7 +1,7 @@
 return {
     name = "lazygit",
     description = "Manage Git repositories in a terminal",
-    default_version = "0.65.0",
+    default_version = "0.65.1",
     source = {
         github = "jesseduffield/lazygit",
         tag = "v{version}",
@@ -19,5 +19,6 @@ return {
     },
     versions = {
         ["0.65.0"] = {},
+        ["0.65.1"] = {},
     },
 }
