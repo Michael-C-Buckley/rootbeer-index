@@ -135,6 +135,20 @@ offline, and persistent installation retained the earlier batch.
 5. Keep upstream discovery settings with each recipe. Discovered releases go
    through the same qualification and publication gates before becoming defaults.
 
+## Curl dependency work
+
+Engine `04f2855` adds static library dependencies and generic command build phases.
+Roll out the engine, clients, and website before publishing schema 4 recipes.
+
+`pkgconf` 3.0.7 is prepared but unpublished. Its upstream suite, relocation, and
+metadata resolution passed locally on macOS ARM64 and Linux ARM64/x86-64
+(x86-64 under emulation). The macOS Rootbeer export also passed offline
+reconstruction. Native CI qualification remains required on all three platforms.
+
+Next: qualify OpenSSL, then curl's compression, HTTP/2, HTTP/3, SSH, and
+platform-specific dependencies. Preserve the full curl feature target when
+qualifying the final binary, including certificate discovery and relocation.
+
 ## Runtime dependencies
 
 - gmx integrates Ghostty and zmx; both must also be installed.
