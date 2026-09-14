@@ -12,12 +12,11 @@ Assembly requires complete declared coverage before publication.
 
 ## Published baseline
 
-106 packages passed the three-platform gates and were published by
-[run 34877598089](https://github.com/tale/rootbeer-index/actions/runs/34877598089)
-from commit `efa7f01`, using engine `552938c`. All three platform jobs, assembly,
-and publication passed without reruns in 7m12s with a new engine cache key.
-[Upstream discovery](https://github.com/tale/rootbeer-index/actions/runs/34877598148)
-also passed. Update candidates remain separate until reviewed.
+107 packages passed the three-platform gates and were published by
+[run 34896137195](https://github.com/tale/rootbeer-index/actions/runs/34896137195)
+from commit `ad44c47`, using engine `552938c`. All three platform jobs, assembly,
+and publication passed without reruns in 3m47s. Update candidates remain separate
+until reviewed.
 
 Earlier public-client checks verified jq and Rush online and offline through
 `current.json`, plus persistent installation with `rb use jq`. The retired Intel
@@ -31,6 +30,25 @@ shared user/Lua ownership, removal after the last owner, and offline reuse. The 
 resolves to the complete signed bundle; macOS metadata recognizes an application bundle
 and strict code-signature verification passes. GUI launch, Accessibility permission
 persistence across upgrades, and login items were not exercised.
+
+## GNU Make
+
+GNU Make 4.4.1 is published for all three platforms as package and command `make`.
+The recipe builds the verified GNU release archive and runs the full upstream
+suite. Optional Guile integration and translated messages are disabled.
+
+A Darwin-only test adjustment uses `ar -S` to preserve the suite's non-object
+archive fixtures and keeps SDK lookup caches outside temporary-file assertions.
+GNU Make's runtime code is unchanged. The macOS binary links only to libSystem.
+
+Package checks cover the exact version, recursive parallel builds, grouped targets,
+no-op rebuilds, changed inputs, and offline reconstruction. A relocated macOS
+artifact also compiled and linked a real static archive without rebuilding it on
+a second invocation. Fresh public-client checks passed signed-index execution,
+offline reuse, persistent installation, and removal.
+
+GNU release intake remains manual; GitHub discovery does not track GNU's release
+server. Source builds use the platform C toolchain and bootstrap Make.
 
 ## Current batch
 
@@ -135,7 +153,6 @@ These candidates remain deferred or need investigation.
 | --- | --- |
 | lua-language-server | On macOS, execute its canonical binary path while preserving argv. Supply writable log/meta paths outside the store; even `--version` otherwise mutates it. Qualification must check diagnostics and unchanged store hashes. |
 | tokei | Newest stable releases have no binaries; the last stable binary release, 12.1.2, lacks macOS ARM64. Assess source builds rather than silently choosing an old version. |
-| make | Revisit the GNU Make 4.4.1 Darwin archive-test failure before admitting a source recipe. |
 | curl | Qualify TLS dependencies, certificate discovery, and relocatable libraries. |
 | git | Qualify dependencies, helper executables, and runtime data. |
 | wget | Qualify TLS dependencies and certificate discovery. |
