@@ -1,6 +1,6 @@
 # Rootbeer package index
 
-Command-line tools for [Rootbeer](https://rootbeer.tale.me), with package recipes
+Packages for [Rootbeer](https://rootbeer.tale.me), with package recipes
 for Apple silicon macOS and Linux on ARM64 and x86-64. Availability varies by package.
 
 [Browse packages](https://rootbeer.tale.me/packages/) ·
@@ -26,6 +26,11 @@ jq --version
 Add `@version` to request an exact release, such as `jq@1.8.2`. You can also manage
 packages alongside your dotfiles with `rb.package("jq")` in your Lua configuration.
 Rootbeer installs prebuilt packages; installation does not compile them locally.
+
+Packages can also export macOS apps: `rb use bobrwm` links `Bobrwm.app` into
+`~/Applications`. Existing apps are never overwritten. `rb unuse bobrwm` removes
+the user installation, retaining the app link if your Lua configuration still needs it.
+For an existing Bobrwm installation, run `rb update`, then `rb use bobrwm --update`.
 
 Run `rb update` on supported platforms to use the active `current.json` catalog.
 Intel macOS is unsupported; its retired binary and frozen catalog channel are no longer
