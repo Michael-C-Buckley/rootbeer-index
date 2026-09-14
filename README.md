@@ -149,5 +149,6 @@ that supports compact package definitions and `package updates --catalog package
 engine first, verify its CI, update the pin, then enable the discovery workflow. Cache entries are trusted authoring
 inputs, not independently signed metadata; only main workflow runs save them.
 
-The current expansion adds bat, duf, dust, hyperfine, just, lazygit, sd, starship,
-yq, and zoxide. These remain candidates until all declared platform jobs pass.
+See [CLI coverage](COVERAGE.md) for the current expansion batch, qualification
+status, and remaining Brew/Mise candidates. New recipes remain candidates until
+all declared platform jobs pass.
