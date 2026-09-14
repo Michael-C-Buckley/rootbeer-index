@@ -11,7 +11,6 @@ return {
             ["aarch64-linux"] = "docker-compose-linux-aarch64",
             ["aarch64-macos"] = "docker-compose-darwin-aarch64",
             ["x86_64-linux"] = "docker-compose-linux-x86_64",
-            ["x86_64-macos"] = "docker-compose-darwin-x86_64",
         },
     },
     bins = { "docker-compose" },
@@ -19,6 +18,6 @@ return {
         { "docker-compose", "version", "--short" },
     },
     versions = {
-        ["5.5.1"] = {},
+        ["5.5.1"] = { revision = 2 },
     },
 }

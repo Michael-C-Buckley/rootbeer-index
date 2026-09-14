@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "kind-linux-arm64",
             ["aarch64-macos"] = "kind-darwin-arm64",
             ["x86_64-linux"] = "kind-linux-amd64",
-            ["x86_64-macos"] = "kind-darwin-amd64",
         },
     },
     bins = { "kind" },
@@ -19,6 +18,6 @@ return {
         { "kind", "create", "--help" },
     },
     versions = {
-        ["0.33.0"] = {},
+        ["0.33.0"] = { revision = 2 },
     },
 }

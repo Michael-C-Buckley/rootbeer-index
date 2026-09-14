@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "minikube-linux-arm64",
             ["aarch64-macos"] = "minikube-darwin-arm64",
             ["x86_64-linux"] = "minikube-linux-amd64",
-            ["x86_64-macos"] = "minikube-darwin-amd64",
         },
     },
     bins = { "minikube" },
@@ -18,6 +17,6 @@ return {
         { "minikube", "version" },
     },
     versions = {
-        ["1.39.0"] = {},
+        ["1.39.0"] = { revision = 2 },
     },
 }

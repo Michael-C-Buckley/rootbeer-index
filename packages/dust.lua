@@ -11,7 +11,6 @@ return {
             ["aarch64-linux"] = "dust-{tag}-aarch64-unknown-linux-musl.tar.gz",
             ["aarch64-macos"] = "dust-{tag}-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "dust-{tag}-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "dust-{tag}-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "dust" },
@@ -19,6 +18,6 @@ return {
         { "dust", "--version" },
     },
     versions = {
-        ["1.2.5"] = {},
+        ["1.2.5"] = { revision = 2 },
     },
 }

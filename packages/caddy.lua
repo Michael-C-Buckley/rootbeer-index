@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "caddy_{version}_linux_arm64.tar.gz",
             ["aarch64-macos"] = "caddy_{version}_mac_arm64.tar.gz",
             ["x86_64-linux"] = "caddy_{version}_linux_amd64.tar.gz",
-            ["x86_64-macos"] = "caddy_{version}_mac_amd64.tar.gz",
         },
     },
     bins = { "caddy" },
@@ -19,6 +18,6 @@ return {
         { "caddy", "list-modules" },
     },
     versions = {
-        ["2.11.4"] = {},
+        ["2.11.4"] = { revision = 2 },
     },
 }

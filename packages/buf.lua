@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "buf-Linux-aarch64.tar.gz",
             ["aarch64-macos"] = "buf-Darwin-arm64.tar.gz",
             ["x86_64-linux"] = "buf-Linux-x86_64.tar.gz",
-            ["x86_64-macos"] = "buf-Darwin-x86_64.tar.gz",
         },
     },
     bins = { "buf" },
@@ -19,6 +18,6 @@ return {
         { "buf", "lint", "--help" },
     },
     versions = {
-        ["1.73.0"] = {},
+        ["1.73.0"] = { revision = 2 },
     },
 }

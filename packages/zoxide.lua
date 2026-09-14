@@ -11,7 +11,6 @@ return {
             ["aarch64-linux"] = "zoxide-{version}-aarch64-unknown-linux-musl.tar.gz",
             ["aarch64-macos"] = "zoxide-{version}-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "zoxide-{version}-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "zoxide-{version}-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "zoxide" },
@@ -20,6 +19,6 @@ return {
         { "zoxide", "init", "zsh" },
     },
     versions = {
-        ["0.10.0"] = {},
+        ["0.10.0"] = { revision = 2 },
     },
 }

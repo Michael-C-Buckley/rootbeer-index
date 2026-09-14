@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "nats-{version}-linux-arm64.zip",
             ["aarch64-macos"] = "nats-{version}-darwin-arm64.zip",
             ["x86_64-linux"] = "nats-{version}-linux-amd64.zip",
-            ["x86_64-macos"] = "nats-{version}-darwin-amd64.zip",
         },
     },
     bins = { "nats" },
@@ -19,6 +18,6 @@ return {
         { "nats", "--help" },
     },
     versions = {
-        ["0.4.0"] = {},
+        ["0.4.0"] = { revision = 2 },
     },
 }

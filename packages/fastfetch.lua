@@ -10,15 +10,14 @@ return {
             ["aarch64-linux"] = "fastfetch-linux-aarch64.tar.gz",
             ["aarch64-macos"] = "fastfetch-macos-aarch64.tar.gz",
             ["x86_64-linux"] = "fastfetch-linux-amd64.tar.gz",
-            ["x86_64-macos"] = "fastfetch-macos-amd64.tar.gz",
         },
     },
-    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux", "x86_64-macos" },
+    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
     bins = { "fastfetch" },
     checks = {
         { "fastfetch", "--version" },
     },
     versions = {
-        ["2.68.1"] = {},
+        ["2.68.1"] = { revision = 2 },
     },
 }

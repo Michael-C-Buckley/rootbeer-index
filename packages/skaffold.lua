@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "skaffold-linux-arm64",
             ["aarch64-macos"] = "skaffold-darwin-arm64",
             ["x86_64-linux"] = "skaffold-linux-amd64",
-            ["x86_64-macos"] = "skaffold-darwin-amd64",
         },
     },
     bins = { "skaffold" },
@@ -18,6 +17,6 @@ return {
         { "skaffold", "version" },
     },
     versions = {
-        ["2.24.0"] = {},
+        ["2.24.0"] = { revision = 2 },
     },
 }

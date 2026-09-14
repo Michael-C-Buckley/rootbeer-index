@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "stern_{version}_linux_arm64.tar.gz",
             ["aarch64-macos"] = "stern_{version}_darwin_arm64.tar.gz",
             ["x86_64-linux"] = "stern_{version}_linux_amd64.tar.gz",
-            ["x86_64-macos"] = "stern_{version}_darwin_amd64.tar.gz",
         },
     },
     bins = { "stern" },
@@ -18,6 +17,6 @@ return {
         { "stern", "--version" },
     },
     versions = {
-        ["1.34.0"] = {},
+        ["1.34.0"] = { revision = 2 },
     },
 }

@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "vivid-{tag}-aarch64-unknown-linux-gnu.tar.gz",
             ["aarch64-macos"] = "vivid-{tag}-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "vivid-{tag}-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "vivid-{tag}-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "vivid" },
@@ -19,6 +18,6 @@ return {
         { "vivid", "generate", "molokai" },
     },
     versions = {
-        ["0.11.1"] = {},
+        ["0.11.1"] = { revision = 2 },
     },
 }

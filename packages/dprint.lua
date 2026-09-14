@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "dprint-aarch64-unknown-linux-musl.zip",
             ["aarch64-macos"] = "dprint-aarch64-apple-darwin.zip",
             ["x86_64-linux"] = "dprint-x86_64-unknown-linux-musl.zip",
-            ["x86_64-macos"] = "dprint-x86_64-apple-darwin.zip",
         },
     },
     bins = { "dprint" },
@@ -19,6 +18,6 @@ return {
         { "dprint", "help" },
     },
     versions = {
-        ["0.57.4"] = {},
+        ["0.57.4"] = { revision = 2 },
     },
 }

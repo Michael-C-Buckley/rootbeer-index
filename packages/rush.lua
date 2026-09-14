@@ -92,7 +92,7 @@ return {
 ]=],
         },
     },
-    systems = { "aarch64-macos", "x86_64-macos", "aarch64-linux", "x86_64-linux" },
+    systems = { "aarch64-macos", "aarch64-linux", "x86_64-linux" },
     bins = { "rush" },
     checks = {
         { "rush", "--version" },
@@ -109,6 +109,7 @@ return {
     },
     versions = {
         ["0.1.0-dev.20260909+g294212ebd35f5b755062186a66bcfd6436d3627a"] = {
+            revision = 2,
             sha256 = "b7eb240c58b7de30a80f1a2f27d1273effa1a1785d670ea6917995e5803422b6",
         },
     },

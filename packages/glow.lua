@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "glow_{version}_Linux_arm64.tar.gz",
             ["aarch64-macos"] = "glow_{version}_Darwin_arm64.tar.gz",
             ["x86_64-linux"] = "glow_{version}_Linux_x86_64.tar.gz",
-            ["x86_64-macos"] = "glow_{version}_Darwin_x86_64.tar.gz",
         },
     },
     bins = { "glow" },
@@ -19,6 +18,6 @@ return {
         { "glow", "--help" },
     },
     versions = {
-        ["3.0.0"] = {},
+        ["3.0.0"] = { revision = 2 },
     },
 }

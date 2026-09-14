@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "golangci-lint-{version}-linux-arm64.tar.gz",
             ["aarch64-macos"] = "golangci-lint-{version}-darwin-arm64.tar.gz",
             ["x86_64-linux"] = "golangci-lint-{version}-linux-amd64.tar.gz",
-            ["x86_64-macos"] = "golangci-lint-{version}-darwin-amd64.tar.gz",
         },
     },
     bins = { "golangci-lint" },
@@ -19,6 +18,6 @@ return {
         { "golangci-lint", "help", "linters" },
     },
     versions = {
-        ["2.13.2"] = {},
+        ["2.13.2"] = { revision = 2 },
     },
 }

@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "k9s_Linux_arm64.tar.gz",
             ["aarch64-macos"] = "k9s_Darwin_arm64.tar.gz",
             ["x86_64-linux"] = "k9s_Linux_amd64.tar.gz",
-            ["x86_64-macos"] = "k9s_Darwin_amd64.tar.gz",
         },
     },
     bins = { "k9s" },
@@ -18,6 +17,6 @@ return {
         { "k9s", "version" },
     },
     versions = {
-        ["0.51.0"] = {},
+        ["0.51.0"] = { revision = 2 },
     },
 }

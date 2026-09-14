@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "grype_{version}_linux_arm64.tar.gz",
             ["aarch64-macos"] = "grype_{version}_darwin_arm64.tar.gz",
             ["x86_64-linux"] = "grype_{version}_linux_amd64.tar.gz",
-            ["x86_64-macos"] = "grype_{version}_darwin_amd64.tar.gz",
         },
     },
     bins = { "grype" },
@@ -18,6 +17,6 @@ return {
         { "grype", "version" },
     },
     versions = {
-        ["0.118.0"] = {},
+        ["0.118.0"] = { revision = 2 },
     },
 }

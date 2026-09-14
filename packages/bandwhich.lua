@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "bandwhich-{tag}-aarch64-unknown-linux-musl.tar.gz",
             ["aarch64-macos"] = "bandwhich-{tag}-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "bandwhich-{tag}-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "bandwhich-{tag}-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "bandwhich" },
@@ -19,6 +18,6 @@ return {
         { "bandwhich", "--help" },
     },
     versions = {
-        ["0.23.1"] = {},
+        ["0.23.1"] = { revision = 2 },
     },
 }

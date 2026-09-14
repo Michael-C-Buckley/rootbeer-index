@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "doggo-linux-aarch64.tar.gz",
             ["aarch64-macos"] = "doggo-darwin-aarch64.tar.gz",
             ["x86_64-linux"] = "doggo-linux-x86_64.tar.gz",
-            ["x86_64-macos"] = "doggo-darwin-x86_64.tar.gz",
         },
     },
     bins = { "doggo" },
@@ -19,6 +18,6 @@ return {
         { "doggo", "--help" },
     },
     versions = {
-        ["1.4.0"] = {},
+        ["1.4.0"] = { revision = 2 },
     },
 }

@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "zellij-aarch64-unknown-linux-musl.tar.gz",
             ["aarch64-macos"] = "zellij-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "zellij-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "zellij-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "zellij" },
@@ -19,6 +18,6 @@ return {
         { "zellij", "--help" },
     },
     versions = {
-        ["0.45.1"] = {},
+        ["0.45.1"] = { revision = 2 },
     },
 }

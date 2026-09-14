@@ -11,10 +11,9 @@ return {
             ["aarch64-linux"] = "age-{tag}-linux-arm64.tar.gz",
             ["aarch64-macos"] = "age-{tag}-darwin-arm64.tar.gz",
             ["x86_64-linux"] = "age-{tag}-linux-amd64.tar.gz",
-            ["x86_64-macos"] = "age-{tag}-darwin-amd64.tar.gz",
         },
     },
-    systems = { "aarch64-macos", "x86_64-macos", "aarch64-linux", "x86_64-linux" },
+    systems = { "aarch64-macos", "aarch64-linux", "x86_64-linux" },
     bins = { "age", "age-keygen" },
     checks = {
         { "age", "--version" },
@@ -22,10 +21,11 @@ return {
     },
     versions = {
         ["1.3.1"] = {
-            revision = 2,
+            revision = 3,
         },
         ["1.3.2"] = {
-            systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux", "x86_64-macos" },
+            revision = 2,
+            systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
         },
     },
 }

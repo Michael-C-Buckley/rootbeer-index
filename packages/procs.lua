@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "procs-{tag}-aarch64-linux.zip",
             ["aarch64-macos"] = "procs-{tag}-aarch64-mac.zip",
             ["x86_64-linux"] = "procs-{tag}-x86_64-linux.zip",
-            ["x86_64-macos"] = "procs-{tag}-x86_64-mac.zip",
         },
     },
     bins = { "procs" },
@@ -19,6 +18,6 @@ return {
         { "procs", "--help" },
     },
     versions = {
-        ["0.14.12"] = {},
+        ["0.14.12"] = { revision = 2 },
     },
 }

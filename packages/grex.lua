@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "grex-{tag}-aarch64-unknown-linux-musl.tar.gz",
             ["aarch64-macos"] = "grex-{tag}-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "grex-{tag}-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "grex-{tag}-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "grex" },
@@ -19,6 +18,6 @@ return {
         { "grex", "abc", "abd" },
     },
     versions = {
-        ["1.4.6"] = {},
+        ["1.4.6"] = { revision = 2 },
     },
 }

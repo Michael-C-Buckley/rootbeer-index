@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "hyperfine-{tag}-aarch64-unknown-linux-gnu.tar.gz",
             ["aarch64-macos"] = "hyperfine-{tag}-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "hyperfine-{tag}-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "hyperfine-{tag}-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "hyperfine" },
@@ -18,6 +17,6 @@ return {
         { "hyperfine", "--version" },
     },
     versions = {
-        ["1.20.0"] = {},
+        ["1.20.0"] = { revision = 2 },
     },
 }

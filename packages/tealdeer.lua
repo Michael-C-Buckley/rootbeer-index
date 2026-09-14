@@ -12,7 +12,6 @@ return {
             ["aarch64-linux"] = "tealdeer-linux-aarch64-musl",
             ["aarch64-macos"] = "tealdeer-macos-aarch64",
             ["x86_64-linux"] = "tealdeer-linux-x86_64-musl",
-            ["x86_64-macos"] = "tealdeer-macos-x86_64",
         },
     },
     bins = { "tldr" },
@@ -20,6 +19,6 @@ return {
         { "tldr", "--version" },
     },
     versions = {
-        ["1.9.0"] = {},
+        ["1.9.0"] = { revision = 2 },
     },
 }

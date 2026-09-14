@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "bat-{tag}-aarch64-unknown-linux-musl.tar.gz",
             ["aarch64-macos"] = "bat-{tag}-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "bat-{tag}-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "bat-{tag}-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "bat" },
@@ -19,6 +18,6 @@ return {
         { "bat", "--list-languages" },
     },
     versions = {
-        ["0.26.1"] = {},
+        ["0.26.1"] = { revision = 2 },
     },
 }

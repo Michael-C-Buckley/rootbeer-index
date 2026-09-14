@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "sqlc_{version}_linux_arm64.tar.gz",
             ["aarch64-macos"] = "sqlc_{version}_darwin_arm64.tar.gz",
             ["x86_64-linux"] = "sqlc_{version}_linux_amd64.tar.gz",
-            ["x86_64-macos"] = "sqlc_{version}_darwin_amd64.tar.gz",
         },
     },
     bins = { "sqlc" },
@@ -19,6 +18,6 @@ return {
         { "sqlc", "generate", "--help" },
     },
     versions = {
-        ["1.31.1"] = {},
+        ["1.31.1"] = { revision = 2 },
     },
 }

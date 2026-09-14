@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "cosign-linux-arm64",
             ["aarch64-macos"] = "cosign-darwin-arm64",
             ["x86_64-linux"] = "cosign-linux-amd64",
-            ["x86_64-macos"] = "cosign-darwin-amd64",
         },
     },
     bins = { "cosign" },
@@ -19,6 +18,6 @@ return {
         { "cosign", "verify", "--help" },
     },
     versions = {
-        ["3.1.3"] = {},
+        ["3.1.3"] = { revision = 2 },
     },
 }

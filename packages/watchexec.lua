@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "watchexec-{version}-aarch64-unknown-linux-musl.tar.xz",
             ["aarch64-macos"] = "watchexec-{version}-aarch64-apple-darwin.tar.xz",
             ["x86_64-linux"] = "watchexec-{version}-x86_64-unknown-linux-musl.tar.xz",
-            ["x86_64-macos"] = "watchexec-{version}-x86_64-apple-darwin.tar.xz",
         },
     },
     bins = { "watchexec" },
@@ -19,6 +18,6 @@ return {
         { "watchexec", "--help" },
     },
     versions = {
-        ["2.7.2"] = {},
+        ["2.7.2"] = { revision = 2 },
     },
 }

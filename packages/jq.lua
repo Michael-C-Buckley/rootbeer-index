@@ -10,16 +10,15 @@ return {
             ["aarch64-linux"] = "jq-linux-arm64",
             ["aarch64-macos"] = "jq-macos-arm64",
             ["x86_64-linux"] = "jq-linux-amd64",
-            ["x86_64-macos"] = "jq-macos-amd64",
         },
     },
-    systems = { "aarch64-macos", "x86_64-macos", "aarch64-linux", "x86_64-linux" },
+    systems = { "aarch64-macos", "aarch64-linux", "x86_64-linux" },
     bins = { "jq" },
     checks = {
         { "jq", "--version" },
         { "jq", "--null-input", "--exit-status", "[1,2,3] | add == 6" },
     },
     versions = {
-        ["1.8.2"] = {},
+        ["1.8.2"] = { revision = 2 },
     },
 }

@@ -1,7 +1,7 @@
 # Rootbeer package index
 
 Command-line tools for [Rootbeer](https://rootbeer.tale.me), with package recipes
-for macOS and Linux on ARM64 and x86-64. Availability varies by package and platform.
+for Apple silicon macOS and Linux on ARM64 and x86-64. Availability varies by package.
 
 [Browse packages](https://rootbeer.tale.me/packages/) ·
 [Install Rootbeer](https://rootbeer.tale.me/guide/getting-started) ·
@@ -27,8 +27,12 @@ Add `@version` to request an exact release, such as `jq@1.8.2`. You can also man
 packages alongside your dotfiles with `rb.package("jq")` in your Lua configuration.
 Rootbeer installs prebuilt packages; installation does not compile them locally.
 
-Upgrade Rootbeer to access the current catalog. Older builds retain the previous
-101-package catalog through a compatibility endpoint.
+Run `rb update` on supported platforms to use the current catalog. Intel macOS is
+retired: its last verified client and package catalog remain available, with no
+further updates promised. Existing package locks and published archives are retained.
+
+The active channel is `current.json`. `latest-v2.json` retains the final
+Intel-compatible catalog, and `latest.json` retains the older schema 1 catalog.
 
 ## Contribute a package
 

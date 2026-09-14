@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "lefthook_{version}_Linux_arm64",
             ["aarch64-macos"] = "lefthook_{version}_MacOS_arm64",
             ["x86_64-linux"] = "lefthook_{version}_Linux_x86_64",
-            ["x86_64-macos"] = "lefthook_{version}_MacOS_x86_64",
         },
     },
     bins = { "lefthook" },
@@ -19,6 +18,6 @@ return {
         { "lefthook", "help" },
     },
     versions = {
-        ["2.1.12"] = {},
+        ["2.1.12"] = { revision = 2 },
     },
 }

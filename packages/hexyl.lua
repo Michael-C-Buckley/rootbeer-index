@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "hexyl-{tag}-aarch64-unknown-linux-gnu.tar.gz",
             ["aarch64-macos"] = "hexyl-{tag}-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "hexyl-{tag}-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "hexyl-{tag}-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "hexyl" },
@@ -19,6 +18,6 @@ return {
         { "hexyl", "--help" },
     },
     versions = {
-        ["0.17.0"] = {},
+        ["0.17.0"] = { revision = 2 },
     },
 }

@@ -11,7 +11,6 @@ return {
             ["aarch64-linux"] = "argocd-linux-arm64",
             ["aarch64-macos"] = "argocd-darwin-arm64",
             ["x86_64-linux"] = "argocd-linux-amd64",
-            ["x86_64-macos"] = "argocd-darwin-amd64",
         },
     },
     bins = { "argocd" },
@@ -19,6 +18,6 @@ return {
         { "argocd", "version", "--client", "--short" },
     },
     versions = {
-        ["3.5.2"] = {},
+        ["3.5.2"] = { revision = 2 },
     },
 }

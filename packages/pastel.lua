@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "pastel-{tag}-aarch64-unknown-linux-gnu.tar.gz",
             ["aarch64-macos"] = "pastel-{tag}-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "pastel-{tag}-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "pastel-{tag}-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "pastel" },
@@ -19,6 +18,6 @@ return {
         { "pastel", "format", "hex", "red" },
     },
     versions = {
-        ["0.12.0"] = {},
+        ["0.12.0"] = { revision = 2 },
     },
 }

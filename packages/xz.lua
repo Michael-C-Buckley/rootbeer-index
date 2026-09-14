@@ -16,7 +16,7 @@ return {
             "--disable-doc",
         },
     },
-    systems = { "aarch64-macos", "x86_64-macos", "aarch64-linux", "x86_64-linux" },
+    systems = { "aarch64-macos", "aarch64-linux", "x86_64-linux" },
     bins = { "xz", "xzdec", "lzmadec", "lzmainfo" },
     checks = {
         { "xz", "--version" },
@@ -26,6 +26,7 @@ return {
     },
     versions = {
         ["5.8.3"] = {
+            revision = 2,
             sha256 = "3d3a1b973af218114f4f889bbaa2f4c037deaae0c8e815eec381c3d546b974a0",
         },
     },

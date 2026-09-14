@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "uv-aarch64-unknown-linux-musl.tar.gz",
             ["aarch64-macos"] = "uv-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "uv-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "uv-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "uv", "uvx" },
@@ -20,6 +19,6 @@ return {
         { "uv", "python", "list", "--only-installed", "--offline" },
     },
     versions = {
-        ["0.12.13"] = {},
+        ["0.12.13"] = { revision = 2 },
     },
 }

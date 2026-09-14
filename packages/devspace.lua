@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "devspace-linux-arm64",
             ["aarch64-macos"] = "devspace-darwin-arm64",
             ["x86_64-linux"] = "devspace-linux-amd64",
-            ["x86_64-macos"] = "devspace-darwin-amd64",
         },
     },
     bins = { "devspace" },
@@ -18,6 +17,6 @@ return {
         { "devspace", "version" },
     },
     versions = {
-        ["6.3.21"] = {},
+        ["6.3.21"] = { revision = 2 },
     },
 }

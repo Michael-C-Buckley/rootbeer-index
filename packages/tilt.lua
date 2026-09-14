@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "tilt.{version}.linux.arm64.tar.gz",
             ["aarch64-macos"] = "tilt.{version}.mac.arm64.tar.gz",
             ["x86_64-linux"] = "tilt.{version}.linux.x86_64.tar.gz",
-            ["x86_64-macos"] = "tilt.{version}.mac.x86_64.tar.gz",
         },
     },
     bins = { "tilt" },
@@ -18,6 +17,6 @@ return {
         { "tilt", "version" },
     },
     versions = {
-        ["0.37.7"] = {},
+        ["0.37.7"] = { revision = 2 },
     },
 }

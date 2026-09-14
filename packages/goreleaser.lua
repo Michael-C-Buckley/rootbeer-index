@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "goreleaser_Linux_arm64.tar.gz",
             ["aarch64-macos"] = "goreleaser_Darwin_arm64.tar.gz",
             ["x86_64-linux"] = "goreleaser_Linux_x86_64.tar.gz",
-            ["x86_64-macos"] = "goreleaser_Darwin_x86_64.tar.gz",
         },
     },
     bins = { "goreleaser" },
@@ -19,6 +18,6 @@ return {
         { "goreleaser", "build", "--help" },
     },
     versions = {
-        ["2.18.1"] = {},
+        ["2.18.1"] = { revision = 2 },
     },
 }

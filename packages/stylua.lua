@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "stylua-linux-aarch64-musl.zip",
             ["aarch64-macos"] = "stylua-macos-aarch64.zip",
             ["x86_64-linux"] = "stylua-linux-x86_64-musl.zip",
-            ["x86_64-macos"] = "stylua-macos-x86_64.zip",
         },
     },
     bins = { "stylua" },
@@ -18,6 +17,6 @@ return {
         { "stylua", "--version" },
     },
     versions = {
-        ["2.5.2"] = {},
+        ["2.5.2"] = { revision = 2 },
     },
 }

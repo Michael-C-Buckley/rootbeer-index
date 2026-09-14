@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "yazi-aarch64-unknown-linux-musl.zip",
             ["aarch64-macos"] = "yazi-aarch64-apple-darwin.zip",
             ["x86_64-linux"] = "yazi-x86_64-unknown-linux-musl.zip",
-            ["x86_64-macos"] = "yazi-x86_64-apple-darwin.zip",
         },
     },
     bins = { "yazi", "ya" },
@@ -20,6 +19,6 @@ return {
         { "ya", "--help" },
     },
     versions = {
-        ["26.9.1"] = {},
+        ["26.9.1"] = { revision = 2 },
     },
 }

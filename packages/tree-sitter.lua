@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "tree-sitter-cli-linux-arm64.zip",
             ["aarch64-macos"] = "tree-sitter-cli-macos-arm64.zip",
             ["x86_64-linux"] = "tree-sitter-cli-linux-x64.zip",
-            ["x86_64-macos"] = "tree-sitter-cli-macos-x64.zip",
         },
     },
     bins = { "tree-sitter" },
@@ -19,6 +18,6 @@ return {
         { "tree-sitter", "query", "--help" },
     },
     versions = {
-        ["0.27.0"] = {},
+        ["0.27.0"] = { revision = 2 },
     },
 }

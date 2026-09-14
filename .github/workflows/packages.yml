@@ -28,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [ubuntu-24.04, ubuntu-24.04-arm, macos-15, macos-15-intel]
+        runner: [ubuntu-24.04, ubuntu-24.04-arm, macos-15]
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 45
     steps:
@@ -51,7 +51,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [ubuntu-24.04, ubuntu-24.04-arm, macos-15, macos-15-intel]
+        runner: [ubuntu-24.04, ubuntu-24.04-arm, macos-15]
         shard: [0, 1, 2, 3, 4, 5, 6, 7]
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 45
@@ -163,7 +163,7 @@ jobs:
           engine-bin/rb package publish --bundle bundle --site site \
             --site-url "$INDEX_URL" --registry tale/rootbeer-index --sequence "$sequence" \
             --repository-url "https://github.com/$GITHUB_REPOSITORY" \
-            --key "$key" --public-key "$INDEX_PUBLIC_KEY" --manifest latest-v2.json
+            --key "$key" --public-key "$INDEX_PUBLIC_KEY" --manifest current.json
       - name: Retain immutable snapshots
         env:
           GH_TOKEN: ${{ github.token }}

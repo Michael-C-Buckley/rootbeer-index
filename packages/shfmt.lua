@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "shfmt_{tag}_linux_arm64",
             ["aarch64-macos"] = "shfmt_{tag}_darwin_arm64",
             ["x86_64-linux"] = "shfmt_{tag}_linux_amd64",
-            ["x86_64-macos"] = "shfmt_{tag}_darwin_amd64",
         },
     },
     bins = { "shfmt" },
@@ -18,6 +17,6 @@ return {
         { "shfmt", "--version" },
     },
     versions = {
-        ["3.14.1"] = {},
+        ["3.14.1"] = { revision = 2 },
     },
 }

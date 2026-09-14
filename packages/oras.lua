@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "oras_{version}_linux_arm64.tar.gz",
             ["aarch64-macos"] = "oras_{version}_darwin_arm64.tar.gz",
             ["x86_64-linux"] = "oras_{version}_linux_amd64.tar.gz",
-            ["x86_64-macos"] = "oras_{version}_darwin_amd64.tar.gz",
         },
     },
     bins = { "oras" },
@@ -19,6 +18,6 @@ return {
         { "oras", "manifest", "--help" },
     },
     versions = {
-        ["1.3.4"] = {},
+        ["1.3.4"] = { revision = 2 },
     },
 }

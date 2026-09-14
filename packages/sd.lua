@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "sd-{tag}-aarch64-unknown-linux-musl.tar.gz",
             ["aarch64-macos"] = "sd-{tag}-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "sd-{tag}-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "sd-{tag}-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "sd" },
@@ -18,6 +17,6 @@ return {
         { "sd", "--version" },
     },
     versions = {
-        ["1.1.0"] = {},
+        ["1.1.0"] = { revision = 2 },
     },
 }

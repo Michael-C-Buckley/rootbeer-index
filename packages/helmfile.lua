@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "helmfile_{version}_linux_arm64.tar.gz",
             ["aarch64-macos"] = "helmfile_{version}_darwin_arm64.tar.gz",
             ["x86_64-linux"] = "helmfile_{version}_linux_amd64.tar.gz",
-            ["x86_64-macos"] = "helmfile_{version}_darwin_amd64.tar.gz",
         },
     },
     bins = { "helmfile" },
@@ -19,6 +18,6 @@ return {
         { "helmfile", "build", "--help" },
     },
     versions = {
-        ["1.8.0"] = {},
+        ["1.8.0"] = { revision = 2 },
     },
 }

@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "flux_{version}_linux_arm64.tar.gz",
             ["aarch64-macos"] = "flux_{version}_darwin_arm64.tar.gz",
             ["x86_64-linux"] = "flux_{version}_linux_amd64.tar.gz",
-            ["x86_64-macos"] = "flux_{version}_darwin_amd64.tar.gz",
         },
     },
     bins = { "flux" },
@@ -18,6 +17,6 @@ return {
         { "flux", "version", "--client" },
     },
     versions = {
-        ["2.9.5"] = {},
+        ["2.9.5"] = { revision = 2 },
     },
 }

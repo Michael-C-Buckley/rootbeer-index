@@ -10,16 +10,15 @@ return {
             ["aarch64-linux"] = "rage-{tag}-arm64-linux.tar.gz",
             ["aarch64-macos"] = "rage-{tag}-arm64-darwin.tar.gz",
             ["x86_64-linux"] = "rage-{tag}-x86_64-linux.tar.gz",
-            ["x86_64-macos"] = "rage-{tag}-x86_64-darwin.tar.gz",
         },
     },
-    systems = { "aarch64-macos", "x86_64-macos", "aarch64-linux", "x86_64-linux" },
+    systems = { "aarch64-macos", "aarch64-linux", "x86_64-linux" },
     bins = { "rage", "rage-keygen" },
     checks = {
         { "rage", "--version" },
         { "rage-keygen", "--version" },
     },
     versions = {
-        ["0.12.1"] = {},
+        ["0.12.1"] = { revision = 2 },
     },
 }

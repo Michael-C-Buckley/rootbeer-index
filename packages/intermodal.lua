@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "imdl-{tag}-aarch64-unknown-linux-musl.tar.gz",
             ["aarch64-macos"] = "imdl-{tag}-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "imdl-{tag}-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "imdl-{tag}-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "imdl" },
@@ -19,6 +18,6 @@ return {
         { "imdl", "--help" },
     },
     versions = {
-        ["0.1.16"] = {},
+        ["0.1.16"] = { revision = 2 },
     },
 }

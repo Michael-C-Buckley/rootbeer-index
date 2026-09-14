@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "ouch-aarch64-unknown-linux-musl.tar.gz",
             ["aarch64-macos"] = "ouch-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "ouch-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "ouch-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "ouch" },
@@ -19,6 +18,6 @@ return {
         { "ouch", "--help" },
     },
     versions = {
-        ["0.8.3"] = {},
+        ["0.8.3"] = { revision = 2 },
     },
 }

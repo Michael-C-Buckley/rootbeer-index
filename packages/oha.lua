@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "oha-linux-arm64",
             ["aarch64-macos"] = "oha-macos-arm64",
             ["x86_64-linux"] = "oha-linux-amd64",
-            ["x86_64-macos"] = "oha-macos-amd64",
         },
     },
     bins = { "oha" },
@@ -19,6 +18,6 @@ return {
         { "oha", "--help" },
     },
     versions = {
-        ["1.16.0"] = {},
+        ["1.16.0"] = { revision = 2 },
     },
 }

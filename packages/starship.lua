@@ -11,7 +11,6 @@ return {
             ["aarch64-linux"] = "starship-aarch64-unknown-linux-musl.tar.gz",
             ["aarch64-macos"] = "starship-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "starship-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "starship-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "starship" },
@@ -20,6 +19,6 @@ return {
         { "starship", "init", "zsh" },
     },
     versions = {
-        ["1.26.0"] = {},
+        ["1.26.0"] = { revision = 2 },
     },
 }

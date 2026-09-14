@@ -12,10 +12,9 @@ return {
             ["aarch64-linux"] = "nvim-linux-arm64.tar.gz",
             ["aarch64-macos"] = "nvim-macos-arm64.tar.gz",
             ["x86_64-linux"] = "nvim-linux-x86_64.tar.gz",
-            ["x86_64-macos"] = "nvim-macos-x86_64.tar.gz",
         },
     },
-    systems = { "aarch64-macos", "x86_64-macos", "aarch64-linux", "x86_64-linux" },
+    systems = { "aarch64-macos", "aarch64-linux", "x86_64-linux" },
     bins = { "nvim" },
     checks = {
         { "nvim", "--version" },
@@ -34,6 +33,6 @@ return {
         },
     },
     versions = {
-        ["0.12.5"] = {},
+        ["0.12.5"] = { revision = 2 },
     },
 }

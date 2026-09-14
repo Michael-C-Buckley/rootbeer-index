@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "dive_{version}_linux_arm64.tar.gz",
             ["aarch64-macos"] = "dive_{version}_darwin_arm64.tar.gz",
             ["x86_64-linux"] = "dive_{version}_linux_amd64.tar.gz",
-            ["x86_64-macos"] = "dive_{version}_darwin_amd64.tar.gz",
         },
     },
     bins = { "dive" },
@@ -19,6 +18,6 @@ return {
         { "dive", "--help" },
     },
     versions = {
-        ["0.13.1"] = {},
+        ["0.13.1"] = { revision = 2 },
     },
 }

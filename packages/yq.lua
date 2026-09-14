@@ -11,7 +11,6 @@ return {
             ["aarch64-linux"] = "yq_linux_arm64",
             ["aarch64-macos"] = "yq_darwin_arm64",
             ["x86_64-linux"] = "yq_linux_amd64",
-            ["x86_64-macos"] = "yq_darwin_amd64",
         },
     },
     bins = { "yq" },
@@ -20,6 +19,6 @@ return {
         { "yq", "--null-input", "--exit-status", "1 + 2 == 3" },
     },
     versions = {
-        ["4.53.6"] = {},
+        ["4.53.6"] = { revision = 2 },
     },
 }

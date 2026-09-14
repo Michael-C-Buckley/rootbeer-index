@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "gping-Linux-musl-arm64.tar.gz",
             ["aarch64-macos"] = "gping-macOS-arm64.tar.gz",
             ["x86_64-linux"] = "gping-Linux-musl-x86_64.tar.gz",
-            ["x86_64-macos"] = "gping-macOS-x86_64.tar.gz",
         },
     },
     bins = { "gping" },
@@ -19,6 +18,6 @@ return {
         { "gping", "--help" },
     },
     versions = {
-        ["1.21.0"] = {},
+        ["1.21.0"] = { revision = 2 },
     },
 }

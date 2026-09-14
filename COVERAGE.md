@@ -1,5 +1,16 @@
 # CLI coverage
 
+## Supported platforms
+
+Active support covers macOS ARM64 and Linux ARM64/x86-64. Intel macOS is retired;
+its final client and signed `latest-v2.json` catalog are frozen and retained.
+Existing snapshots, receipts, archives, package versions, and locks remain valid.
+
+The retirement removes Intel targets from active recipes and increments every
+affected revision. No package or version is removed. The three-platform catalog
+publishes to `current.json` after qualification; the baseline below records the
+last publication before retirement.
+
 ## Published baseline
 
 106 packages passed the native platform gates and were published by
@@ -49,7 +60,8 @@ Live signed-index checks passed for prtui, Bobrwm, and Rush: one-off execution,
 offline reuse, persistent installation, and Rush function autoload through profile
 symlinks. The previous public client still installs jq from its unchanged endpoint.
 
-The new catalog uses `latest-v2.json`. The existing `latest.json` and immutable
+This batch originally published through `latest-v2.json`, now frozen for retired
+Intel clients. New active-platform revisions publish through `current.json`. The existing `latest.json` and immutable
 history remain available to older clients; upgrade Rootbeer for this batch.
 
 ## Added packages

@@ -10,15 +10,14 @@ return {
             ["aarch64-linux"] = "actionlint_{version}_linux_arm64.tar.gz",
             ["aarch64-macos"] = "actionlint_{version}_darwin_arm64.tar.gz",
             ["x86_64-linux"] = "actionlint_{version}_linux_amd64.tar.gz",
-            ["x86_64-macos"] = "actionlint_{version}_darwin_amd64.tar.gz",
         },
     },
-    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux", "x86_64-macos" },
+    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
     bins = { "actionlint" },
     checks = {
         { "actionlint", "-version" },
     },
     versions = {
-        ["1.7.12"] = {},
+        ["1.7.12"] = { revision = 2 },
     },
 }

@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "asciinema-aarch64-unknown-linux-gnu",
             ["aarch64-macos"] = "asciinema-aarch64-apple-darwin",
             ["x86_64-linux"] = "asciinema-x86_64-unknown-linux-musl",
-            ["x86_64-macos"] = "asciinema-x86_64-apple-darwin",
         },
     },
     bins = { "asciinema" },
@@ -19,6 +18,6 @@ return {
         { "asciinema", "rec", "--help" },
     },
     versions = {
-        ["3.2.1"] = {},
+        ["3.2.1"] = { revision = 2 },
     },
 }

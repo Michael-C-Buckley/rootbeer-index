@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "duf_{version}_linux_arm64.tar.gz",
             ["aarch64-macos"] = "duf_{version}_darwin_arm64.tar.gz",
             ["x86_64-linux"] = "duf_{version}_linux_x86_64.tar.gz",
-            ["x86_64-macos"] = "duf_{version}_darwin_x86_64.tar.gz",
         },
     },
     bins = { "duf" },
@@ -18,6 +17,6 @@ return {
         { "duf", "--version" },
     },
     versions = {
-        ["0.9.1"] = {},
+        ["0.9.1"] = { revision = 2 },
     },
 }

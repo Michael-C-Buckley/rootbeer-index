@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "rustic-{tag}-aarch64-unknown-linux-musl.tar.gz",
             ["aarch64-macos"] = "rustic-{tag}-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "rustic-{tag}-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "rustic-{tag}-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "rustic" },
@@ -19,6 +18,6 @@ return {
         { "rustic", "backup", "--help" },
     },
     versions = {
-        ["0.11.4"] = {},
+        ["0.11.4"] = { revision = 2 },
     },
 }

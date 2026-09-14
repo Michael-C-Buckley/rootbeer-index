@@ -10,15 +10,14 @@ return {
             ["aarch64-linux"] = "gitui-linux-aarch64.tar.gz",
             ["aarch64-macos"] = "gitui-mac.tar.gz",
             ["x86_64-linux"] = "gitui-linux-x86_64.tar.gz",
-            ["x86_64-macos"] = "gitui-mac-x86.tar.gz",
         },
     },
-    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux", "x86_64-macos" },
+    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
     bins = { "gitui" },
     checks = {
         { "gitui", "--version" },
     },
     versions = {
-        ["0.28.1"] = { revision = 2 },
+        ["0.28.1"] = { revision = 3 },
     },
 }

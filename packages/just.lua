@@ -11,7 +11,6 @@ return {
             ["aarch64-linux"] = "just-{tag}-aarch64-unknown-linux-musl.tar.gz",
             ["aarch64-macos"] = "just-{tag}-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "just-{tag}-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "just-{tag}-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "just" },
@@ -19,6 +18,6 @@ return {
         { "just", "--version" },
     },
     versions = {
-        ["1.58.0"] = {},
+        ["1.58.0"] = { revision = 2 },
     },
 }

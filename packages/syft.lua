@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "syft_{version}_linux_arm64.tar.gz",
             ["aarch64-macos"] = "syft_{version}_darwin_arm64.tar.gz",
             ["x86_64-linux"] = "syft_{version}_linux_amd64.tar.gz",
-            ["x86_64-macos"] = "syft_{version}_darwin_amd64.tar.gz",
         },
     },
     bins = { "syft" },
@@ -18,6 +17,6 @@ return {
         { "syft", "version" },
     },
     versions = {
-        ["1.51.1"] = {},
+        ["1.51.1"] = { revision = 2 },
     },
 }

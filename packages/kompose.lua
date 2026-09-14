@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "kompose-linux-arm64",
             ["aarch64-macos"] = "kompose-darwin-arm64",
             ["x86_64-linux"] = "kompose-linux-amd64",
-            ["x86_64-macos"] = "kompose-darwin-amd64",
         },
     },
     bins = { "kompose" },
@@ -19,6 +18,6 @@ return {
         { "kompose", "convert", "--help" },
     },
     versions = {
-        ["1.38.0"] = {},
+        ["1.38.0"] = { revision = 2 },
     },
 }

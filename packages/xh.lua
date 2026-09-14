@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "xh-{tag}-aarch64-unknown-linux-musl.tar.gz",
             ["aarch64-macos"] = "xh-{tag}-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "xh-{tag}-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "xh-{tag}-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "xh" },
@@ -19,6 +18,6 @@ return {
         { "xh", "--offline", "GET", "https://example.com" },
     },
     versions = {
-        ["0.26.2"] = {},
+        ["0.26.2"] = { revision = 2 },
     },
 }

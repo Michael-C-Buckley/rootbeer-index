@@ -8,7 +8,6 @@ return {
         repository_id = 1333872697,
         assets = {
             ["aarch64-macos"] = "prtui-{tag}-aarch64-apple-darwin.tar.gz",
-            ["x86_64-macos"] = "prtui-{tag}-x86_64-apple-darwin.tar.gz",
             ["aarch64-linux"] = "prtui-{tag}-aarch64-unknown-linux-gnu.tar.gz",
             ["x86_64-linux"] = "prtui-{tag}-x86_64-unknown-linux-gnu.tar.gz",
         },
@@ -19,6 +18,6 @@ return {
         { "prtui", "--help" },
     },
     versions = {
-        ["0.3.0"] = {},
+        ["0.3.0"] = { revision = 2 },
     },
 }

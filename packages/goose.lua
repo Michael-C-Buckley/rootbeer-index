@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "goose_linux_arm64",
             ["aarch64-macos"] = "goose_darwin_arm64",
             ["x86_64-linux"] = "goose_linux_x86_64",
-            ["x86_64-macos"] = "goose_darwin_x86_64",
         },
     },
     bins = { "goose" },
@@ -19,6 +18,6 @@ return {
         { "goose", "-h" },
     },
     versions = {
-        ["3.28.0"] = {},
+        ["3.28.0"] = { revision = 2 },
     },
 }

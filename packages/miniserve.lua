@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "miniserve-{version}-aarch64-unknown-linux-musl",
             ["aarch64-macos"] = "miniserve-{version}-aarch64-apple-darwin",
             ["x86_64-linux"] = "miniserve-{version}-x86_64-unknown-linux-musl",
-            ["x86_64-macos"] = "miniserve-{version}-x86_64-apple-darwin",
         },
     },
     bins = { "miniserve" },
@@ -19,6 +18,6 @@ return {
         { "miniserve", "--help" },
     },
     versions = {
-        ["0.35.0"] = {},
+        ["0.35.0"] = { revision = 2 },
     },
 }

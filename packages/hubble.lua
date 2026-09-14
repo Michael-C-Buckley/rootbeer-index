@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "hubble-linux-arm64.tar.gz",
             ["aarch64-macos"] = "hubble-darwin-arm64.tar.gz",
             ["x86_64-linux"] = "hubble-linux-amd64.tar.gz",
-            ["x86_64-macos"] = "hubble-darwin-amd64.tar.gz",
         },
     },
     bins = { "hubble" },
@@ -19,6 +18,6 @@ return {
         { "hubble", "observe", "--help" },
     },
     versions = {
-        ["1.19.4"] = {},
+        ["1.19.4"] = { revision = 2 },
     },
 }

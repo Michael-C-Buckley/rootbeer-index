@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "dasel_linux_arm64",
             ["aarch64-macos"] = "dasel_darwin_arm64",
             ["x86_64-linux"] = "dasel_linux_amd64",
-            ["x86_64-macos"] = "dasel_darwin_amd64",
         },
     },
     bins = { "dasel" },
@@ -19,6 +18,6 @@ return {
         { "dasel", "--help" },
     },
     versions = {
-        ["3.11.2"] = {},
+        ["3.11.2"] = { revision = 2 },
     },
 }

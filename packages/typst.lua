@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "typst-aarch64-unknown-linux-musl.tar.xz",
             ["aarch64-macos"] = "typst-aarch64-apple-darwin.tar.xz",
             ["x86_64-linux"] = "typst-x86_64-unknown-linux-musl.tar.xz",
-            ["x86_64-macos"] = "typst-x86_64-apple-darwin.tar.xz",
         },
     },
     bins = { "typst" },
@@ -19,6 +18,6 @@ return {
         { "typst", "fonts", "--ignore-system-fonts" },
     },
     versions = {
-        ["0.15.1"] = {},
+        ["0.15.1"] = { revision = 2 },
     },
 }

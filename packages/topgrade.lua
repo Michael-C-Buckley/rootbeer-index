@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "topgrade-{tag}-aarch64-unknown-linux-musl.tar.gz",
             ["aarch64-macos"] = "topgrade-{tag}-aarch64-apple-darwin.tar.gz",
             ["x86_64-linux"] = "topgrade-{tag}-x86_64-unknown-linux-musl.tar.gz",
-            ["x86_64-macos"] = "topgrade-{tag}-x86_64-apple-darwin.tar.gz",
         },
     },
     bins = { "topgrade" },
@@ -19,6 +18,6 @@ return {
         { "topgrade", "--help" },
     },
     versions = {
-        ["17.11.0"] = {},
+        ["17.11.0"] = { revision = 2 },
     },
 }

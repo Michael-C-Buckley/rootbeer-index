@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "lazydocker_{version}_Linux_arm64.tar.gz",
             ["aarch64-macos"] = "lazydocker_{version}_Darwin_arm64.tar.gz",
             ["x86_64-linux"] = "lazydocker_{version}_Linux_x86_64.tar.gz",
-            ["x86_64-macos"] = "lazydocker_{version}_Darwin_x86_64.tar.gz",
         },
     },
     bins = { "lazydocker" },
@@ -18,6 +17,6 @@ return {
         { "lazydocker", "--version" },
     },
     versions = {
-        ["0.25.2"] = {},
+        ["0.25.2"] = { revision = 2 },
     },
 }

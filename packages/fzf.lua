@@ -10,16 +10,15 @@ return {
             ["aarch64-linux"] = "fzf-{version}-linux_arm64.tar.gz",
             ["aarch64-macos"] = "fzf-{version}-darwin_arm64.tar.gz",
             ["x86_64-linux"] = "fzf-{version}-linux_amd64.tar.gz",
-            ["x86_64-macos"] = "fzf-{version}-darwin_amd64.tar.gz",
         },
     },
-    systems = { "aarch64-macos", "x86_64-macos", "aarch64-linux", "x86_64-linux" },
+    systems = { "aarch64-macos", "aarch64-linux", "x86_64-linux" },
     bins = { "fzf" },
     checks = {
         { "fzf", "--version" },
         { "fzf", "--bash" },
     },
     versions = {
-        ["0.74.4"] = {},
+        ["0.74.4"] = { revision = 2 },
     },
 }

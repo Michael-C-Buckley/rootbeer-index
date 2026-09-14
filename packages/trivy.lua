@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "trivy_{version}_Linux-ARM64.tar.gz",
             ["aarch64-macos"] = "trivy_{version}_macOS-ARM64.tar.gz",
             ["x86_64-linux"] = "trivy_{version}_Linux-64bit.tar.gz",
-            ["x86_64-macos"] = "trivy_{version}_macOS-64bit.tar.gz",
         },
     },
     bins = { "trivy" },
@@ -19,6 +18,6 @@ return {
         { "trivy", "filesystem", "--help" },
     },
     versions = {
-        ["0.74.0"] = {},
+        ["0.74.0"] = { revision = 2 },
     },
 }

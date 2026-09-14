@@ -10,7 +10,6 @@ return {
             ["aarch64-linux"] = "agg-aarch64-unknown-linux-gnu",
             ["aarch64-macos"] = "agg-aarch64-apple-darwin",
             ["x86_64-linux"] = "agg-x86_64-unknown-linux-musl",
-            ["x86_64-macos"] = "agg-x86_64-apple-darwin",
         },
     },
     bins = { "agg" },
@@ -19,6 +18,6 @@ return {
         { "agg", "--help" },
     },
     versions = {
-        ["1.9.0"] = {},
+        ["1.9.0"] = { revision = 2 },
     },
 }
