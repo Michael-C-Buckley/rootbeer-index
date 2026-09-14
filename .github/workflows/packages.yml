@@ -163,7 +163,7 @@ jobs:
           engine-bin/rb package publish --bundle bundle --site site \
             --site-url "$INDEX_URL" --registry tale/rootbeer-index --sequence "$sequence" \
             --repository-url "https://github.com/$GITHUB_REPOSITORY" \
-            --key "$key" --public-key "$INDEX_PUBLIC_KEY"
+            --key "$key" --public-key "$INDEX_PUBLIC_KEY" --manifest latest-v2.json
       - name: Retain immutable snapshots
         env:
           GH_TOKEN: ${{ github.token }}

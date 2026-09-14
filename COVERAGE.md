@@ -14,6 +14,38 @@ expansion declare macOS and Linux on ARM64 and x86-64. Native command checks and
 offline reconstruction verify installation; they do not establish that every
 interactive interface or external integration works.
 
+## Current candidates
+
+This batch awaits qualification on every declared platform:
+
+| Package | Version | Platforms | Notes |
+| --- | --- | --- | --- |
+| bobrwm | 0.1.0-main+572265d | macOS ARM64 | Pinned tip artifact; complete signed app bundle mirrored. |
+| prtui | 0.3.0 | All four | Requires Git and authenticated GitHub CLI; Linux needs glibc 2.35+. |
+| rush | 0.1.0-dev.20260909+g294212ebd35f5b755062186a66bcfd6436d3627a | All four | Pinned source snapshot built with Zig 0.16.0; patched version and executable-relative runtime data. |
+| monstar | 1.0.1 | Linux x86-64 | Requires Wayland, glibc 2.36+, and the libraries below. |
+| zig | 0.16.0 | All four | Complete compiler distribution; also builds Rush in CI. |
+
+Prise is deprecated and excluded. Rush snapshots and Bobrwm tip artifacts require
+manual intake with pinned sources; discovery does not silently follow their heads.
+
+Local macOS ARM64 checks passed for prtui and Bobrwm, including offline
+reconstruction. Bobrwm's mirrored app retained its files and valid code signature;
+its window manager and macOS permission flows were not launched. Use
+`rb run bobrwm --app Bobrwm.app` to open the app; `rb use bobrwm` installs its CLI.
+
+Monstar passed version/help checks and its headless rendering benchmark in a
+disposable Linux x86-64 container. Its interactive Wayland session remains untested.
+It needs libwayland-client, libwayland-cursor, Fontconfig, FreeType, HarfBuzz,
+libxkbcommon, and installed fonts. Rootbeer does not install these system libraries.
+
+Rush passed its upstream tests and relocated shell/function-autoload checks on
+macOS ARM64. Package checks exercise quoting, substitution, arithmetic, bundled
+functions, and the exact snapshot version after installation and offline recovery.
+
+The new catalog uses `latest-v2.json`. The existing `latest.json` and immutable
+history remain available to older clients; upgrade Rootbeer for this batch.
+
 ## Added packages
 
 These four tools are published, with installed command names taken from their

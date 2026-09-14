@@ -27,6 +27,9 @@ Add `@version` to request an exact release, such as `jq@1.8.2`. You can also man
 packages alongside your dotfiles with `rb.package("jq")` in your Lua configuration.
 Rootbeer installs prebuilt packages; installation does not compile them locally.
 
+Upgrade Rootbeer to access the current catalog. Older builds retain the previous
+101-package catalog through a compatibility endpoint.
+
 ## Contribute a package
 
 Recipes live in [`packages/`](packages/), one Lua file per tool. Start with an
