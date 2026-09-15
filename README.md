@@ -90,3 +90,18 @@ for deployment and client verification details.
 
 Retain published snapshots, receipts, and package archives: existing lockfiles
 still depend on them.
+
+## Source alternatives
+
+Source-capable packages prefer published binaries and can also be built locally:
+
+```sh
+rb use jq --source
+rb use zlib --head
+rb use zlib --tag v1.3.2
+```
+
+HEAD and tags resolve to exact commits in the package lock. Normal installs reuse
+that lock; `--update` resolves the reference again. Recipes opt into Git builds
+with `inputs.source.git`. Binary-only packages remain supported regardless of
+license and reject source selectors.

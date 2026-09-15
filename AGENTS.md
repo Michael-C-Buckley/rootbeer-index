@@ -13,8 +13,10 @@ Declare only platforms that the workflow can test. Source builds execute trusted
 upstream code; never expose publication credentials to build or pull-request jobs.
 
 Changes target main. Do not commit or push without the user's instruction.
-Publication requires all declared versions and platforms. Never remove retained
-snapshots, receipts, or OCI manifests needed by existing lockfiles.
+Publication requires a usable source recipe or a published artifact for every
+declared version and platform. Prebuilt-only recipes require complete artifacts.
+Never remove retained snapshots, receipts, or OCI manifests needed by existing
+lockfiles.
 
 Choose the newest upstream release available for each platform. Use
 `default_versions` for platforms whose newest supported release differs from
@@ -35,3 +37,10 @@ Shared-field changes affect retained versions: use version overrides or incremen
 each affected recipe revision. Compare expanded `rootbeer-forge --catalog packages
 index` output when editing. Schema migrations are coordinated with the engine pin;
 legacy authoring formats do not need compatibility adapters.
+
+Source-capable recipes may also declare `inputs.prebuilt` as an optional fast path.
+Qualify both paths against the shared output contract. `inputs.prebuilt.systems`
+can limit binary coverage; version overrides may disable inherited prebuilts with
+`enabled = false`. Declare `inputs.source.git` only after verifying the build steps
+against repository archives. HEAD, tags, and branches are resolved to commit SHAs
+by consumers; source archive checksums remain separate from Git commit IDs.
