@@ -85,17 +85,11 @@ jobs:
         with:
           name: upstream-candidates
           path: candidates
-      - name: Select changed packages
-        run: |
-          mkdir changed-packages
-          jq -r '.updated[]' candidates/report.json | while IFS= read -r name; do
-            cp "candidates/packages/$name.lua" changed-packages/
-          done
       - uses: ./.github/actions/export-packages
         with:
           revision: ${{ steps.engine.outputs.revision }}
           runner: ${{ matrix.runner }}
-          catalog: changed-packages
+          catalog: candidates/packages
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: qualified-${{ matrix.runner }}

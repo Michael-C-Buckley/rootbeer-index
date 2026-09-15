@@ -1,22 +1,33 @@
 return {
+    schema = 2,
     name = "shfmt",
     description = "Format shell scripts",
     default_version = "3.14.1",
-    source = {
+    homepage = "https://github.com/mvdan/sh",
+    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
+    upstream = {
         github = "mvdan/sh",
-        tag = "v{version}",
         repository_id = 49766020,
-        assets = {
-            ["aarch64-linux"] = "shfmt_{tag}_linux_arm64",
-            ["aarch64-macos"] = "shfmt_{tag}_darwin_arm64",
-            ["x86_64-linux"] = "shfmt_{tag}_linux_amd64",
+        tag_prefix = "v",
+    },
+    inputs = {
+        prebuilt = {
+            github = "mvdan/sh",
+            tag = "v{version}",
+            assets = {
+                ["x86_64-linux"] = "shfmt_{tag}_linux_amd64",
+                ["aarch64-macos"] = "shfmt_{tag}_darwin_arm64",
+                ["aarch64-linux"] = "shfmt_{tag}_linux_arm64",
+            },
         },
     },
-    bins = { "shfmt" },
-    checks = {
-        { "shfmt", "--version" },
+    outputs = {
+        bins = { "shfmt" },
+        checks = { { "shfmt", "--version" } },
     },
     versions = {
-        ["3.14.1"] = { revision = 2 },
+        ["3.14.1"] = {
+            revision = 2,
+        },
     },
 }

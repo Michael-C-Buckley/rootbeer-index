@@ -1,23 +1,33 @@
 return {
+    schema = 2,
     name = "cosign",
     description = "Sign and verify container images and files",
     default_version = "3.1.3",
-    source = {
+    homepage = "https://github.com/sigstore/cosign",
+    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
+    upstream = {
         github = "sigstore/cosign",
-        tag = "v{version}",
         repository_id = 335952417,
-        assets = {
-            ["aarch64-linux"] = "cosign-linux-arm64",
-            ["aarch64-macos"] = "cosign-darwin-arm64",
-            ["x86_64-linux"] = "cosign-linux-amd64",
+        tag_prefix = "v",
+    },
+    inputs = {
+        prebuilt = {
+            github = "sigstore/cosign",
+            tag = "v{version}",
+            assets = {
+                ["x86_64-linux"] = "cosign-linux-amd64",
+                ["aarch64-macos"] = "cosign-darwin-arm64",
+                ["aarch64-linux"] = "cosign-linux-arm64",
+            },
         },
     },
-    bins = { "cosign" },
-    checks = {
-        { "cosign", "version" },
-        { "cosign", "verify", "--help" },
+    outputs = {
+        bins = { "cosign" },
+        checks = { { "cosign", "version" }, { "cosign", "verify", "--help" } },
     },
     versions = {
-        ["3.1.3"] = { revision = 2 },
+        ["3.1.3"] = {
+            revision = 2,
+        },
     },
 }

@@ -1,23 +1,33 @@
 return {
+    schema = 2,
     name = "hubble",
     description = "Inspect Kubernetes network traffic with Cilium",
     default_version = "1.19.4",
-    source = {
+    homepage = "https://github.com/cilium/hubble",
+    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
+    upstream = {
         github = "cilium/hubble",
-        tag = "v{version}",
         repository_id = 222612062,
-        assets = {
-            ["aarch64-linux"] = "hubble-linux-arm64.tar.gz",
-            ["aarch64-macos"] = "hubble-darwin-arm64.tar.gz",
-            ["x86_64-linux"] = "hubble-linux-amd64.tar.gz",
+        tag_prefix = "v",
+    },
+    inputs = {
+        prebuilt = {
+            github = "cilium/hubble",
+            tag = "v{version}",
+            assets = {
+                ["x86_64-linux"] = "hubble-linux-amd64.tar.gz",
+                ["aarch64-macos"] = "hubble-darwin-arm64.tar.gz",
+                ["aarch64-linux"] = "hubble-linux-arm64.tar.gz",
+            },
         },
     },
-    bins = { "hubble" },
-    checks = {
-        { "hubble", "version" },
-        { "hubble", "observe", "--help" },
+    outputs = {
+        bins = { "hubble" },
+        checks = { { "hubble", "version" }, { "hubble", "observe", "--help" } },
     },
     versions = {
-        ["1.19.4"] = { revision = 2 },
+        ["1.19.4"] = {
+            revision = 2,
+        },
     },
 }

@@ -1,23 +1,33 @@
 return {
+    schema = 2,
     name = "dasel",
     description = "Query and transform structured data",
     default_version = "3.11.2",
-    source = {
+    homepage = "https://github.com/TomWright/dasel",
+    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
+    upstream = {
         github = "TomWright/dasel",
-        tag = "v{version}",
         repository_id = 297615696,
-        assets = {
-            ["aarch64-linux"] = "dasel_linux_arm64",
-            ["aarch64-macos"] = "dasel_darwin_arm64",
-            ["x86_64-linux"] = "dasel_linux_amd64",
+        tag_prefix = "v",
+    },
+    inputs = {
+        prebuilt = {
+            github = "TomWright/dasel",
+            tag = "v{version}",
+            assets = {
+                ["x86_64-linux"] = "dasel_linux_amd64",
+                ["aarch64-macos"] = "dasel_darwin_arm64",
+                ["aarch64-linux"] = "dasel_linux_arm64",
+            },
         },
     },
-    bins = { "dasel" },
-    checks = {
-        { "dasel", "version" },
-        { "dasel", "--help" },
+    outputs = {
+        bins = { "dasel" },
+        checks = { { "dasel", "version" }, { "dasel", "--help" } },
     },
     versions = {
-        ["3.11.2"] = { revision = 2 },
+        ["3.11.2"] = {
+            revision = 2,
+        },
     },
 }

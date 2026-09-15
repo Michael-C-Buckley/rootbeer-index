@@ -1,22 +1,31 @@
 return {
+    schema = 2,
     name = "gmx",
     description = "Manage Ghostty terminal sessions",
     default_version = "0.1.10",
-    source = {
+    homepage = "https://github.com/nicosuave/gmx",
+    systems = { "aarch64-macos" },
+    upstream = {
         github = "nicosuave/gmx",
-        tag = "v{version}",
         repository_id = 1183476144,
-        assets = {
-            ["aarch64-macos"] = "gmx-{version}-macos-arm64.tar.gz",
+        tag_prefix = "v",
+    },
+    inputs = {
+        prebuilt = {
+            github = "nicosuave/gmx",
+            tag = "v{version}",
+            assets = {
+                ["aarch64-macos"] = "gmx-{version}-macos-arm64.tar.gz",
+            },
         },
     },
-    systems = { "aarch64-macos" },
-    bins = { "gmx" },
-    checks = {
-        { "gmx", "--help" },
-        { "gmx", "completions", "zsh" },
+    outputs = {
+        bins = { "gmx" },
+        checks = { { "gmx", "--help" }, { "gmx", "completions", "zsh" } },
     },
     versions = {
-        ["0.1.10"] = { revision = 2 },
+        ["0.1.10"] = {
+            revision = 2,
+        },
     },
 }

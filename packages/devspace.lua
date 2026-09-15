@@ -1,22 +1,33 @@
 return {
+    schema = 2,
     name = "devspace",
     description = "Develop applications in Kubernetes",
     default_version = "6.3.21",
-    source = {
+    homepage = "https://github.com/devspace-sh/devspace",
+    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
+    upstream = {
         github = "devspace-sh/devspace",
-        tag = "v{version}",
         repository_id = 145153231,
-        assets = {
-            ["aarch64-linux"] = "devspace-linux-arm64",
-            ["aarch64-macos"] = "devspace-darwin-arm64",
-            ["x86_64-linux"] = "devspace-linux-amd64",
+        tag_prefix = "v",
+    },
+    inputs = {
+        prebuilt = {
+            github = "devspace-sh/devspace",
+            tag = "v{version}",
+            assets = {
+                ["x86_64-linux"] = "devspace-linux-amd64",
+                ["aarch64-macos"] = "devspace-darwin-arm64",
+                ["aarch64-linux"] = "devspace-linux-arm64",
+            },
         },
     },
-    bins = { "devspace" },
-    checks = {
-        { "devspace", "version" },
+    outputs = {
+        bins = { "devspace" },
+        checks = { { "devspace", "version" } },
     },
     versions = {
-        ["6.3.21"] = { revision = 2 },
+        ["6.3.21"] = {
+            revision = 2,
+        },
     },
 }

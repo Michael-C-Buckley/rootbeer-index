@@ -1,24 +1,34 @@
 return {
+    schema = 2,
     name = "tealdeer",
     aliases = { "tldr" },
     description = "Read concise command-line usage examples",
-    homepage = "https://docs.tealdeer.org",
     default_version = "1.9.0",
-    source = {
+    homepage = "https://docs.tealdeer.org",
+    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
+    upstream = {
         github = "tealdeer-rs/tealdeer",
-        tag = "v{version}",
         repository_id = 48739367,
-        assets = {
-            ["aarch64-linux"] = "tealdeer-linux-aarch64-musl",
-            ["aarch64-macos"] = "tealdeer-macos-aarch64",
-            ["x86_64-linux"] = "tealdeer-linux-x86_64-musl",
+        tag_prefix = "v",
+    },
+    inputs = {
+        prebuilt = {
+            github = "tealdeer-rs/tealdeer",
+            tag = "v{version}",
+            assets = {
+                ["x86_64-linux"] = "tealdeer-linux-x86_64-musl",
+                ["aarch64-macos"] = "tealdeer-macos-aarch64",
+                ["aarch64-linux"] = "tealdeer-linux-aarch64-musl",
+            },
         },
     },
-    bins = { "tldr" },
-    checks = {
-        { "tldr", "--version" },
+    outputs = {
+        bins = { "tldr" },
+        checks = { { "tldr", "--version" } },
     },
     versions = {
-        ["1.9.0"] = { revision = 2 },
+        ["1.9.0"] = {
+            revision = 2,
+        },
     },
 }

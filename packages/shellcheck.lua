@@ -1,23 +1,33 @@
 return {
+    schema = 2,
     name = "shellcheck",
     description = "Find bugs in shell scripts",
     default_version = "0.11.0",
-    source = {
+    homepage = "https://github.com/koalaman/shellcheck",
+    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
+    upstream = {
         github = "koalaman/shellcheck",
-        tag = "v{version}",
         repository_id = 6731432,
-        assets = {
-            ["aarch64-linux"] = "shellcheck-{tag}.linux.aarch64.tar.gz",
-            ["aarch64-macos"] = "shellcheck-{tag}.darwin.aarch64.tar.gz",
-            ["x86_64-linux"] = "shellcheck-{tag}.linux.x86_64.tar.gz",
+        tag_prefix = "v",
+    },
+    inputs = {
+        prebuilt = {
+            github = "koalaman/shellcheck",
+            tag = "v{version}",
+            assets = {
+                ["x86_64-linux"] = "shellcheck-{tag}.linux.x86_64.tar.gz",
+                ["aarch64-macos"] = "shellcheck-{tag}.darwin.aarch64.tar.gz",
+                ["aarch64-linux"] = "shellcheck-{tag}.linux.aarch64.tar.gz",
+            },
         },
     },
-    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
-    bins = { "shellcheck" },
-    checks = {
-        { "shellcheck", "--version" },
+    outputs = {
+        bins = { "shellcheck" },
+        checks = { { "shellcheck", "--version" } },
     },
     versions = {
-        ["0.11.0"] = { revision = 2 },
+        ["0.11.0"] = {
+            revision = 2,
+        },
     },
 }

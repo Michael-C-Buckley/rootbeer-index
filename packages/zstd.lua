@@ -1,25 +1,23 @@
 return {
+    schema = 2,
     name = "zstd",
     description = "Zstandard compression library and tools",
-    homepage = "https://facebook.github.io/zstd/",
     default_version = "1.5.7",
+    homepage = "https://facebook.github.io/zstd/",
     systems = { "aarch64-macos", "aarch64-linux", "x86_64-linux" },
-    bins = { "zstd", "zstdcat", "unzstd", "zstdmt" },
-    checks = {
-        { "zstd", "--version" },
-        { "zstd", "-vv", "--version" },
-        { "zstdcat", "--version" },
-        { "unzstd", "--version" },
-        { "zstdmt", "--version" },
-    },
     build = {
-        backend = "commands",
-        url = "https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz",
-        archive = "tar.gz",
-        strip_prefix = "zstd-1.5.7",
-        dependencies = { "cmake@4.4.3", "lz4@1.10.0", "xz@5.8.3", "zlib@1.3.2" },
-        libraries = { "lib/libzstd.a" },
         steps = {
+            check = {
+                {
+                    "ctest",
+                    "--test-dir",
+                    "output",
+                    "--output-on-failure",
+                    "--no-tests=error",
+                    "--parallel",
+                    "{jobs}",
+                },
+            },
             configure = {
                 {
                     "cmake",
@@ -51,22 +49,37 @@ return {
                     "-DCMAKE_INSTALL_INCLUDEDIR=/include",
                 },
             },
-            build = { { "cmake", "--build", "output", "--parallel", "{jobs}" } },
-            check = {
-                {
-                    "ctest",
-                    "--test-dir",
-                    "output",
-                    "--output-on-failure",
-                    "--no-tests=error",
-                    "--parallel",
-                    "{jobs}",
-                },
-            },
             install = { { "/usr/bin/env", "DESTDIR={prefix}", "cmake", "--install", "output" } },
+            build = { { "cmake", "--build", "output", "--parallel", "{jobs}" } },
+        },
+        dependencies = { "cmake@4.4.3", "lz4@1.10.0", "xz@5.8.3", "zlib@1.3.2" },
+        backend = "custom",
+    },
+    inputs = {
+        source = {
+            url = "https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz",
+            archive = "tar.gz",
+            strip_prefix = "zstd-1.5.7",
+        },
+    },
+    outputs = {
+        libraries = { "lib/libzstd.a" },
+        bins = { "zstd", "zstdcat", "unzstd", "zstdmt" },
+        checks = {
+            { "zstd", "--version" },
+            { "zstd", "-vv", "--version" },
+            { "zstdcat", "--version" },
+            { "unzstd", "--version" },
+            { "zstdmt", "--version" },
         },
     },
     versions = {
-        ["1.5.7"] = { sha256 = "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3" },
+        ["1.5.7"] = {
+            inputs = {
+                source = {
+                    sha256 = "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3",
+                },
+            },
+        },
     },
 }

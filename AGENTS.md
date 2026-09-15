@@ -25,8 +25,13 @@ Do as little CI work as possible: reuse verified package results when their
 recipe, dependency recipes, platform, engine, and build environment are unchanged.
 Keep full qualification available for scheduled and explicit rechecks.
 
-Use compact package definitions: a shared `source` or `build`, shared `bins` and
-`checks`, and exact `versions` containing only revisions, checksums, or exceptions.
-GitHub `source` settings also drive discovery; do not duplicate them in `upstream`.
+Use schema 2 package definitions. Keep release discovery in `upstream`, download
+locations and hashes in `inputs`, backend settings in `build`, and exported files
+and checks in `outputs`. Prebuilt-only packages have no build section. Use `custom`
+for explicit build phases. Each source version owns its hash under
+`versions[version].inputs.source.sha256`.
+
 Shared-field changes affect retained versions: use version overrides or increment
-each affected recipe revision. Compare expanded `rootbeer-forge index` output when editing.
+each affected recipe revision. Compare expanded `rootbeer-forge --catalog packages
+index` output when editing. Schema migrations are coordinated with the engine pin;
+legacy authoring formats do not need compatibility adapters.

@@ -1,22 +1,33 @@
 return {
+    schema = 2,
     name = "grype",
     description = "Find vulnerabilities in images and filesystems",
     default_version = "0.118.0",
-    source = {
+    homepage = "https://github.com/anchore/grype",
+    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
+    upstream = {
         github = "anchore/grype",
-        tag = "v{version}",
         repository_id = 267054247,
-        assets = {
-            ["aarch64-linux"] = "grype_{version}_linux_arm64.tar.gz",
-            ["aarch64-macos"] = "grype_{version}_darwin_arm64.tar.gz",
-            ["x86_64-linux"] = "grype_{version}_linux_amd64.tar.gz",
+        tag_prefix = "v",
+    },
+    inputs = {
+        prebuilt = {
+            github = "anchore/grype",
+            tag = "v{version}",
+            assets = {
+                ["x86_64-linux"] = "grype_{version}_linux_amd64.tar.gz",
+                ["aarch64-macos"] = "grype_{version}_darwin_arm64.tar.gz",
+                ["aarch64-linux"] = "grype_{version}_linux_arm64.tar.gz",
+            },
         },
     },
-    bins = { "grype" },
-    checks = {
-        { "grype", "version" },
+    outputs = {
+        bins = { "grype" },
+        checks = { { "grype", "version" } },
     },
     versions = {
-        ["0.118.0"] = { revision = 2 },
+        ["0.118.0"] = {
+            revision = 2,
+        },
     },
 }

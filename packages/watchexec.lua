@@ -1,23 +1,33 @@
 return {
+    schema = 2,
     name = "watchexec",
     description = "Run commands when files change",
     default_version = "2.7.2",
-    source = {
+    homepage = "https://github.com/watchexec/watchexec",
+    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
+    upstream = {
         github = "watchexec/watchexec",
-        tag = "v{version}",
         repository_id = 68546136,
-        assets = {
-            ["aarch64-linux"] = "watchexec-{version}-aarch64-unknown-linux-musl.tar.xz",
-            ["aarch64-macos"] = "watchexec-{version}-aarch64-apple-darwin.tar.xz",
-            ["x86_64-linux"] = "watchexec-{version}-x86_64-unknown-linux-musl.tar.xz",
+        tag_prefix = "v",
+    },
+    inputs = {
+        prebuilt = {
+            github = "watchexec/watchexec",
+            tag = "v{version}",
+            assets = {
+                ["x86_64-linux"] = "watchexec-{version}-x86_64-unknown-linux-musl.tar.xz",
+                ["aarch64-macos"] = "watchexec-{version}-aarch64-apple-darwin.tar.xz",
+                ["aarch64-linux"] = "watchexec-{version}-aarch64-unknown-linux-musl.tar.xz",
+            },
         },
     },
-    bins = { "watchexec" },
-    checks = {
-        { "watchexec", "--version" },
-        { "watchexec", "--help" },
+    outputs = {
+        bins = { "watchexec" },
+        checks = { { "watchexec", "--version" }, { "watchexec", "--help" } },
     },
     versions = {
-        ["2.7.2"] = { revision = 2 },
+        ["2.7.2"] = {
+            revision = 2,
+        },
     },
 }

@@ -1,20 +1,27 @@
 return {
+    schema = 2,
     name = "monstar",
     description = "Run a CPU-rendered Wayland terminal",
     default_version = "1.0.1",
-    source = {
+    homepage = "https://github.com/rockorager/monstar",
+    systems = { "x86_64-linux" },
+    upstream = {
         github = "rockorager/monstar",
-        tag = "v{version}",
         repository_id = 1287637631,
-        assets = {
-            ["x86_64-linux"] = "monstar-{version}-x86_64-linux.tar.gz",
+        tag_prefix = "v",
+    },
+    inputs = {
+        prebuilt = {
+            github = "rockorager/monstar",
+            tag = "v{version}",
+            assets = {
+                ["x86_64-linux"] = "monstar-{version}-x86_64-linux.tar.gz",
+            },
         },
     },
-    bins = { "monstar" },
-    checks = {
-        { "monstar", "--version" },
-        { "monstar", "--help" },
-        { "monstar", "--bench" },
+    outputs = {
+        bins = { "monstar" },
+        checks = { { "monstar", "--version" }, { "monstar", "--help" }, { "monstar", "--bench" } },
     },
     versions = {
         ["1.0.1"] = {},

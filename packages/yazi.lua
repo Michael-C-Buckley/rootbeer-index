@@ -1,24 +1,33 @@
 return {
+    schema = 2,
     name = "yazi",
     description = "Browse and manage files in the terminal",
     default_version = "26.9.1",
-    source = {
+    homepage = "https://github.com/sxyazi/yazi",
+    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
+    upstream = {
         github = "sxyazi/yazi",
-        tag = "v{version}",
         repository_id = 663900193,
-        assets = {
-            ["aarch64-linux"] = "yazi-aarch64-unknown-linux-musl.zip",
-            ["aarch64-macos"] = "yazi-aarch64-apple-darwin.zip",
-            ["x86_64-linux"] = "yazi-x86_64-unknown-linux-musl.zip",
+        tag_prefix = "v",
+    },
+    inputs = {
+        prebuilt = {
+            github = "sxyazi/yazi",
+            tag = "v{version}",
+            assets = {
+                ["x86_64-linux"] = "yazi-x86_64-unknown-linux-musl.zip",
+                ["aarch64-macos"] = "yazi-aarch64-apple-darwin.zip",
+                ["aarch64-linux"] = "yazi-aarch64-unknown-linux-musl.zip",
+            },
         },
     },
-    bins = { "yazi", "ya" },
-    checks = {
-        { "yazi", "--version" },
-        { "ya", "--version" },
-        { "ya", "--help" },
+    outputs = {
+        bins = { "yazi", "ya" },
+        checks = { { "yazi", "--version" }, { "ya", "--version" }, { "ya", "--help" } },
     },
     versions = {
-        ["26.9.1"] = { revision = 2 },
+        ["26.9.1"] = {
+            revision = 2,
+        },
     },
 }

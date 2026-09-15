@@ -38,11 +38,14 @@ served. Published snapshots, receipts, and archives remain available for existin
 
 ## Contribute a package
 
-Recipes live in [`packages/`](packages/), one Lua file per tool. Start with an
+Recipes live in [`packages/`](packages/), one schema 2 Lua file per tool. Start with an
 existing recipe such as [`jq.lua`](packages/jq.lua), then follow the
 [package authoring guide](https://rootbeer.tale.me/contributing/packaging).
 
 - Use the canonical lowercase name and exact upstream versions.
+- Separate `upstream` discovery, `inputs`, optional `build`, and `outputs`.
+- Keep source hashes in each version's `inputs.source.sha256`. Prebuilt-only
+  packages require no build definition.
 - Declare only platforms you can verify, with checks that exercise the tool.
 - Keep older versions. Increment the revision when changing an existing recipe.
 - Review shared settings carefully: changes can affect every retained version.
@@ -60,7 +63,7 @@ access and can take time. Open a pull request with the recipe changes; CI verifi
 platforms before publication.
 
 The [upstream discovery workflow](.github/workflows/discovery.yml) checks for new
-releases and produces candidate recipes for review. It does not merge or publish
+releases and produces a candidate catalog for review, including dependencies. It does not merge or publish
 them automatically.
 
 ## Report a problem
