@@ -12,9 +12,9 @@ Assembly requires complete declared coverage before publication.
 
 ## Published baseline
 
-109 packages passed the three-platform gates and were published by
-[run 34904637298](https://github.com/tale/rootbeer-index/actions/runs/34904637298)
-from commit `8ceeacf`, using engine `04f2855`. All three platform jobs, assembly,
+110 packages passed the three-platform gates and were published by
+[run 34912050040](https://github.com/tale/rootbeer-index/actions/runs/34912050040)
+from commit `0cdfca5`, using engine `04f2855`. All three platform jobs, assembly,
 and publication passed without reruns. Update candidates remain separate until
 reviewed.
 
@@ -153,8 +153,14 @@ default/legacy providers, and SRP API availability. The published executable als
 passed certificate generation and authenticated TLS 1.2/1.3 handshakes on localhost.
 The website's catalog loader verified both packages and OpenSSL's library exports.
 
-Next: zlib, Brotli, and Zstandard, followed by HTTP/2, HTTP/3, SSH, and
-platform-specific dependencies. Preserve the full curl feature target when
+Zlib 1.3.2 is published as a library-only package on all three platforms. Native
+upstream tests and offline reconstruction passed. Public-client checks verified
+signed-index resolution, offline reuse, and a consumer linked through pkgconf
+that compresses/decompresses data and checks a known CRC32. Package search
+successfully loaded its library-only entry.
+
+Next: qualify CMake for Brotli, then Brotli and Zstandard, followed by HTTP/2,
+HTTP/3, SSH, and platform-specific dependencies. Preserve the full curl feature target when
 qualifying the final binary, including certificate discovery and relocation.
 
 ## Runtime dependencies
