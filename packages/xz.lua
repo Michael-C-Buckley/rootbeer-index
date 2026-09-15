@@ -5,6 +5,7 @@ return {
     default_version = "5.8.3",
     build = {
         backend = "autotools",
+        libraries = { "lib/liblzma.a" },
         url = "https://github.com/tukaani-project/xz/releases/download/v{version}/xz-{version}.tar.gz",
         archive = "tar.gz",
         strip_prefix = "xz-{version}",
@@ -26,7 +27,7 @@ return {
     },
     versions = {
         ["5.8.3"] = {
-            revision = 2,
+            revision = 3,
             sha256 = "3d3a1b973af218114f4f889bbaa2f4c037deaae0c8e815eec381c3d546b974a0",
         },
     },
