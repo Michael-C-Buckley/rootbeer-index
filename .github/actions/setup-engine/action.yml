@@ -1,30 +1,33 @@
 name: Set up package engine
 description: Build the pinned Rootbeer engine with a separate cache for publishing.
 inputs:
-  revision:
-    description: Full Rootbeer commit SHA
-    required: true
   runner:
     description: Runner image label used by the job
     required: true
   cache-scope:
     description: Engine cache namespace (verify or publish)
     default: verify
+outputs:
+  revision:
+    description: Full Rootbeer commit SHA from engine-revision
+    value: ${{ steps.pin.outputs.revision }}
 runs:
   using: composite
   steps:
-    - name: Validate engine configuration
+    - name: Read engine revision
+      id: pin
       shell: bash
       env:
-        ENGINE_REV: ${{ inputs.revision }}
         CACHE_SCOPE: ${{ inputs.cache-scope }}
       run: |
-        [[ "$ENGINE_REV" =~ ^[0-9a-f]{40}$ ]]
+        revision=$(cat engine-revision)
+        [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
+        printf 'revision=%s\n' "$revision" >> "$GITHUB_OUTPUT"
         [[ "$CACHE_SCOPE" =~ ^(verify|publish)$ ]]
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         repository: tale/rootbeer
-        ref: ${{ inputs.revision }}
+        ref: ${{ steps.pin.outputs.revision }}
         path: engine
         persist-credentials: false
     - uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de # master
@@ -41,7 +44,7 @@ runs:
           ~/.cargo/registry
           ~/.cargo/git
           engine/target
-        key: engine-${{ inputs.cache-scope }}-v1-${{ inputs.runner }}-${{ steps.rust.outputs.version }}-${{ inputs.revision }}-${{ hashFiles('engine/Cargo.lock') }}
+        key: engine-${{ inputs.cache-scope }}-v1-${{ inputs.runner }}-${{ steps.rust.outputs.version }}-${{ steps.pin.outputs.revision }}-${{ hashFiles('engine/Cargo.lock') }}
         restore-keys: |
           engine-${{ inputs.cache-scope }}-v1-${{ inputs.runner }}-${{ steps.rust.outputs.version }}-
     - name: Build package engine
@@ -49,4 +52,4 @@ runs:
       working-directory: engine
       run: |
         export RB_BUILD_TIMESTAMP="$(git show -s --format=%cI HEAD)"
-        cargo build --locked --release --bin rb
+        cargo build --locked --release --bin rootbeer-forge

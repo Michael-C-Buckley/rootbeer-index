@@ -12,7 +12,7 @@ inputs:
     default: packages
   engine:
     description: Path to the package engine executable
-    default: engine/target/release/rb
+    default: engine/target/release/rootbeer-forge
   recheck:
     description: Rebuild and recheck every package
     default: "false"
@@ -50,7 +50,8 @@ runs:
       run: |
         options=()
         if [ "$SHOULD_RECHECK" = true ]; then options+=(--recheck); fi
-        "$ENGINE" package --catalog "$CATALOG" export \
+        "$ENGINE" --catalog "$CATALOG" check
+        "$ENGINE" --catalog "$CATALOG" export \
           --registry tale/rootbeer-index --output result --workers 2 --jobs 2 \
           --cache .package-results --cache-context "$CACHE_CONTEXT" "${options[@]}"
     - name: Save verified package results

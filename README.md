@@ -50,13 +50,13 @@ existing recipe such as [`jq.lua`](packages/jq.lua), then follow the
 From this repository, validate the catalog and test packages for your platform:
 
 ```sh
-rb package --catalog packages check
-rb package --catalog packages export --registry tale/rootbeer-index --output result --workers 2 --jobs 2
+rootbeer-forge --catalog packages check
+rootbeer-forge --catalog packages export --registry tale/rootbeer-index --output result --workers 2 --jobs 2
 ```
 
-Use a current Rootbeer build and a new output directory. Export downloads or builds
-packages and runs their declared checks, so it requires network access and can take
-time. Open a pull request with the recipe changes; CI verifies all declared
+Use Forge from the commit in `engine-revision` and a new output directory. Export
+downloads or builds packages and runs their declared checks, so it requires network
+access and can take time. Open a pull request with the recipe changes; CI verifies all declared
 platforms before publication.
 
 The [upstream discovery workflow](.github/workflows/discovery.yml) checks for new
@@ -71,9 +71,15 @@ For problems with `rb` itself, use the [Rootbeer repository](https://github.com/
 
 ## Maintenance
 
+This repository owns package discovery, build checks, and publication. The engine
+repository owns the tools and their regression tests.
+
 The [publication workflow](.github/workflows/packages.yml) verifies recipes and
-publishes the signed index. Each of three platform jobs builds its engine and
-exports with two package workers and two compiler jobs per build. Verified results
+publishes the signed index using `rootbeer-forge`. The exact engine commit lives in
+[`engine-revision`](engine-revision); changing it runs package CI and discovery.
+Update the pin together with any required recipe or workflow migrations.
+
+Each of three platform jobs builds its engine and exports with two package workers and two compiler jobs per build. Verified results
 are cached per engine and environment, including successful work from failed runs.
 Package updates are independent of Rootbeer binary
 releases. See [index hosting and trust](https://rootbeer.tale.me/contributing/package-hosting)

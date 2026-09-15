@@ -4,9 +4,11 @@ Package definitions live in `packages/*.lua`. Use canonical lowercase names and 
 versions. Increment revisions when changing an existing recipe. Do not edit generated
 indexes or add hand-written checksums without verifying the upstream bytes.
 
-Run `rb package --catalog packages check` and `rb package --catalog packages export
+Run `rootbeer-forge --catalog packages check` and `rootbeer-forge --catalog packages export
 --registry tale/rootbeer-index --output result`. Tests for these commands live in
-the Rootbeer engine repository.
+the Rootbeer engine repository. Package discovery, builds, and publication CI belong
+here. Pin Forge with the full engine commit SHA in `engine-revision`; update that
+file alongside engine-dependent recipe and workflow changes.
 Declare only platforms that the workflow can test. Source builds execute trusted
 upstream code; never expose publication credentials to build or pull-request jobs.
 
@@ -27,4 +29,4 @@ Use compact package definitions: a shared `source` or `build`, shared `bins` and
 `checks`, and exact `versions` containing only revisions, checksums, or exceptions.
 GitHub `source` settings also drive discovery; do not duplicate them in `upstream`.
 Shared-field changes affect retained versions: use version overrides or increment
-each affected recipe revision. Compare expanded `rb package index` output when editing.
+each affected recipe revision. Compare expanded `rootbeer-forge index` output when editing.
