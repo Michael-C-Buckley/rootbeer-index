@@ -18,13 +18,27 @@ return {
         strip_prefix = "lz4-1.10.0",
         libraries = { "lib/liblz4.a" },
         steps = {
-            configure = {},
+            configure = {
+                -- Fix upstream list tests for temporary paths and concatenated frames.
+                {
+                    "sed",
+                    "-i.bak",
+                    "-e",
+                    [[s/ffm = self.cvinfo.file_frame_map\[i\]/ffm = os.path.basename(self.cvinfo.file_frame_map[i])/]],
+                    "-e",
+                    "s/if start != 0 and end != 0:/if end != 0:/",
+                    "tests/test-lz4-list.py",
+                },
+            },
             build = { { "make", "-j{jobs}", "BUILD_SHARED=no", "PREFIX=/" } },
             check = { { "make", "BUILD_SHARED=no", "PREFIX=/", "test" } },
             install = { { "make", "BUILD_SHARED=no", "PREFIX=/", "DESTDIR={prefix}", "install" } },
         },
     },
     versions = {
-        ["1.10.0"] = { sha256 = "537512904744b35e232912055ccf8ec66d768639ff3abe5788d90d792ec5f48b" },
+        ["1.10.0"] = {
+            revision = 2,
+            sha256 = "537512904744b35e232912055ccf8ec66d768639ff3abe5788d90d792ec5f48b",
+        },
     },
 }
