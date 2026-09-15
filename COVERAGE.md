@@ -12,9 +12,9 @@ Assembly requires complete declared coverage before publication.
 
 ## Published baseline
 
-110 packages passed the three-platform gates and were published by
-[run 34912050040](https://github.com/tale/rootbeer-index/actions/runs/34912050040)
-from commit `0cdfca5`, using engine `04f2855`. All three platform jobs, assembly,
+112 packages passed the three-platform gates and were published by
+[run 34913244500](https://github.com/tale/rootbeer-index/actions/runs/34913244500)
+from commit `d255226`, using engine `04f2855`. All three platform jobs, assembly,
 and publication passed without reruns. Update candidates remain separate until
 reviewed.
 
@@ -159,8 +159,15 @@ signed-index resolution, offline reuse, and a consumer linked through pkgconf
 that compresses/decompresses data and checks a known CRC32. Package search
 successfully loaded its library-only entry.
 
-Next: qualify CMake for Brotli, then Brotli and Zstandard, followed by HTTP/2,
-HTTP/3, SSH, and platform-specific dependencies. Preserve the full curl feature target when
+CMake 4.4.3 and Brotli 1.2.0 are published on all three platforms. CMake's
+public tools configured, compiled, and tested a consumer of the published zlib
+using the installed FindZLIB module and CTest. Brotli pins CMake and its
+separate upstream test corpus; the local audit ran all 73 CMake tests. Native
+qualification and offline reconstruction passed on each platform. Public checks
+verified offline CLI round trips, user installation/removal, and static encoder/
+decoder linking through pkgconf, including rejection of truncated input.
+
+Next: Zstandard, followed by HTTP/2, HTTP/3, SSH, and platform-specific dependencies. Preserve the full curl feature target when
 qualifying the final binary, including certificate discovery and relocation.
 
 ## Runtime dependencies
