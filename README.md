@@ -63,9 +63,6 @@ The [upstream discovery workflow](.github/workflows/discovery.yml) checks for ne
 releases and produces candidate recipes for review. It does not merge or publish
 them automatically.
 
-See [CLI coverage](COVERAGE.md) for the current expansion batch and qualification
-status. New recipes remain candidates until all declared platform jobs pass.
-
 ## Report a problem
 
 For a missing tool, broken package, or outdated version, [open an issue here](https://github.com/tale/rootbeer-index/issues).
