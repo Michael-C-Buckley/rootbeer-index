@@ -1,0 +1,40 @@
+name: Prepare package results
+description: Identify the build environment and restore verified package results.
+inputs:
+  revision:
+    description: Full Rootbeer engine commit SHA
+    required: true
+  runner:
+    description: Runner image label
+    required: true
+outputs:
+  cache-key:
+    description: Key for saving completed results
+    value: ${{ steps.cache.outputs.cache-primary-key }}
+  cache-context:
+    description: Build environment identity
+    value: ${{ steps.environment.outputs.digest }}
+runs:
+  using: composite
+  steps:
+    - name: Identify package build environment
+      id: environment
+      shell: bash
+      run: |
+        : "${ImageOS:?}" "${ImageVersion:?}" "${RUNNER_ARCH:?}"
+        {
+          printf '%s\n' "$ImageOS" "$ImageVersion" "$RUNNER_ARCH"
+          cc --version
+          make --version
+          rustc --version --verbose
+        } > "$RUNNER_TEMP/package-environment"
+        echo "digest=$(shasum -a 256 "$RUNNER_TEMP/package-environment" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+    - name: Restore verified package results
+      id: cache
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: .package-results
+        key: results-v4-${{ inputs.runner }}-${{ steps.environment.outputs.digest }}-${{ inputs.revision }}-${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: |
+          results-v4-${{ inputs.runner }}-${{ steps.environment.outputs.digest }}-${{ inputs.revision }}-
+          results-v4-${{ inputs.runner }}-${{ steps.environment.outputs.digest }}-

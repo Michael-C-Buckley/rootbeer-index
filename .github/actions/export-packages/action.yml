@@ -1,11 +1,8 @@
 name: Export packages
 description: Build and qualify packages, reusing verified results for compatible engine inputs and build environments.
 inputs:
-  revision:
-    description: Full Rootbeer commit SHA used to build the engine
-    required: true
-  runner:
-    description: Runner image label used by the job
+  cache-context:
+    description: Build environment identity from prepare-package-results
     required: true
   catalog:
     description: Directory containing package definitions
@@ -19,32 +16,11 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Identify package build environment
-      id: environment
-      shell: bash
-      run: |
-        : "${ImageOS:?}" "${ImageVersion:?}" "${RUNNER_ARCH:?}"
-        {
-          printf '%s\n' "$ImageOS" "$ImageVersion" "$RUNNER_ARCH"
-          cc --version
-          make --version
-          rustc --version --verbose
-        } > "$RUNNER_TEMP/package-environment"
-        echo "digest=$(shasum -a 256 "$RUNNER_TEMP/package-environment" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
-    - name: Restore verified package results
-      id: cache
-      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-      with:
-        path: .package-results
-        key: results-v4-${{ inputs.runner }}-${{ steps.environment.outputs.digest }}-${{ inputs.revision }}-${{ github.run_id }}-${{ github.run_attempt }}
-        restore-keys: |
-          results-v4-${{ inputs.runner }}-${{ steps.environment.outputs.digest }}-${{ inputs.revision }}-
-          results-v4-${{ inputs.runner }}-${{ steps.environment.outputs.digest }}-
     - name: Build, test, and export recipes
       shell: bash
       env:
         GITHUB_TOKEN: ${{ github.token }}
-        CACHE_CONTEXT: ${{ steps.environment.outputs.digest }}
+        CACHE_CONTEXT: ${{ inputs.cache-context }}
         SHOULD_RECHECK: ${{ inputs.recheck }}
         CATALOG: ${{ inputs.catalog }}
         ENGINE: ${{ inputs.engine }}
@@ -61,9 +37,3 @@ runs:
         "$ENGINE" --catalog "$CATALOG" export \
           --registry tale/rootbeer-index --output result --workers 2 --jobs "$jobs" \
           --cache .package-results --cache-context "$CACHE_CONTEXT" "${options[@]}"
-    - name: Save verified package results
-      if: ${{ !cancelled() && (github.ref == 'refs/heads/main' || github.event_name == 'pull_request') && steps.cache.outputs.cache-primary-key != '' && hashFiles('.package-results/**/record.json', '.package-results/builds/results/**/receipt.json') != '' }}
-      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-      with:
-        path: .package-results
-        key: ${{ steps.cache.outputs.cache-primary-key }}

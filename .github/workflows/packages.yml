@@ -31,7 +31,7 @@ jobs:
       matrix:
         runner: [ubuntu-24.04, ubuntu-24.04-arm, macos-15]
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 60
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -40,11 +40,22 @@ jobs:
         id: engine
         with:
           runner: ${{ matrix.runner }}
-      - uses: ./.github/actions/export-packages
+      - uses: ./.github/actions/prepare-package-results
+        id: results
         with:
           revision: ${{ steps.engine.outputs.revision }}
           runner: ${{ matrix.runner }}
+      - uses: ./.github/actions/export-packages
+        timeout-minutes: 55
+        with:
+          cache-context: ${{ steps.results.outputs.cache-context }}
           recheck: ${{ github.event_name == 'schedule' || inputs.recheck == true }}
+      - name: Save verified package results
+        if: ${{ !cancelled() && (github.ref == 'refs/heads/main' || github.event_name == 'pull_request') && steps.results.outputs.cache-key != '' && hashFiles('.package-results/**/record.json', '.package-results/builds/results/**/receipt.json') != '' }}
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .package-results
+          key: ${{ steps.results.outputs.cache-key }}
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: engine-${{ matrix.runner }}
