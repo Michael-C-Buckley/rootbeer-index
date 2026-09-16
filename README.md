@@ -105,3 +105,16 @@ HEAD and tags resolve to exact commits in the package lock. Normal installs reus
 that lock; `--update` resolves the reference again. Recipes opt into Git builds
 with `inputs.source.git`. Binary-only packages remain supported regardless of
 license and reject source selectors.
+
+## Build verification and publication
+
+Pull requests run package verification without publishing credentials. Successful
+runs retain a verified bundle. After merge, `Publish packages` reuses that bundle
+only when the recipes, engine pin, and verification workflow and actions match the
+approved inputs. A changed pipeline, missing bundle, or explicit recheck causes a
+fresh verification build.
+
+The publishing job builds its own engine in a separate cache namespace. It checks
+the downloaded bundle's GitHub artifact digest and compares its catalog with the
+merged recipes before uploading binaries and signing the index. It never runs an
+engine executable uploaded by a pull request. Scheduled runs perform full rechecks.
