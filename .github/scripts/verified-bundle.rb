@@ -50,33 +50,36 @@ def same_inputs?(source, target)
   end
 end
 
+def merged_heads(repository, target)
+  commits = command('git', 'rev-list', '--first-parent', '--max-count=20', target).lines.map(&:strip)
+  commits.take_while { |commit| same_inputs?(commit, target) }.flat_map do |commit|
+    api("repos/#{repository}/commits/#{commit}/pulls").map do |pull|
+      next unless pull['merged_at'] && pull['merge_commit_sha'] == commit
+      next unless pull.dig('head', 'repo', 'full_name') == repository
+
+      head = revision(pull.fetch('head').fetch('sha'))
+      fetch_commit(head)
+      base = revision(command('git', 'merge-base', head, "#{commit}^1").strip)
+      [head, base]
+    end.compact
+  end
+end
+
 def select_run(repository, target)
   return nil if ENV['RECHECK'] == 'true'
 
   trusted_workflow = workflow(target)
-  pulls = api("repos/#{repository}/commits/#{target}/pulls")
-  pulls.each do |pull|
-    next unless pull['merged_at'] && pull['merge_commit_sha'] == target
-    next unless pull.dig('head', 'repo', 'full_name') == repository
-
-    head = revision(pull.fetch('head').fetch('sha'))
-    fetch_commit(head)
+  merged_heads(repository, target).each do |head, base|
     next unless same_inputs?(head, target) && workflow(head) == trusted_workflow
+    next unless pipeline(head) == pipeline(base)
+    next unless workflow(base) == trusted_workflow
+    next unless command('git', 'rev-parse', "#{base}:.github/actions") == command('git', 'rev-parse', "#{target}:.github/actions")
 
     runs = api("repos/#{repository}/actions/workflows/packages.yml/runs?event=pull_request&status=success&head_sha=#{head}&per_page=100")
     runs.fetch('workflow_runs').each do |run|
       next unless run['head_sha'] == head && run['event'] == 'pull_request'
       next unless run['path'] == WORKFLOW && run['status'] == 'completed' && run['conclusion'] == 'success'
       next unless run.dig('head_repository', 'full_name') == repository
-
-      tested_pull = run.fetch('pull_requests').find { |entry| entry['number'] == pull['number'] }
-      next unless tested_pull && tested_pull.dig('head', 'sha') == head
-
-      base = revision(tested_pull.fetch('base').fetch('sha'))
-      fetch_commit(base)
-      next unless pipeline(head) == pipeline(base)
-      next unless workflow(base) == trusted_workflow
-      next unless command('git', 'rev-parse', "#{base}:.github/actions") == command('git', 'rev-parse', "#{target}:.github/actions")
 
       artifacts = api("repos/#{repository}/actions/runs/#{run.fetch('id')}/artifacts?per_page=100")
       bundles = artifacts.fetch('artifacts').select { |artifact| artifact['name'] == 'verified-bundle' && !artifact['expired'] }
