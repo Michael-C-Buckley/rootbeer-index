@@ -83,8 +83,16 @@ publishes the signed index using `rootbeer-forge`. The exact engine commit lives
 [`engine-revision`](engine-revision); changing it runs package CI and discovery.
 Update the pin together with any required recipe or workflow migrations.
 
-Each of three platform jobs builds its engine and exports with two package workers and two compiler jobs per build. Verified results
-are cached per engine and environment, including successful work from failed runs.
+Each of three platform jobs builds its engine and exports with two package workers,
+sharing a compiler job budget detected from the runner's CPU count. Dependencies
+run before consumers; independent source builds can overlap. Shared dependencies
+compile once per export, including full rechecks.
+
+Verified results are cached by engine inputs and build environment, including
+successful work from failed runs. Compatible results survive unrelated engine
+commits. PR caches remain scoped to that PR and support its retries; main's caches
+also seed new PRs. Promoting a verified bundle does not copy a PR cache into main.
+Scheduled full checks refresh main's cache.
 Package updates are independent of Rootbeer binary
 releases. See [index hosting and trust](https://rootbeer.tale.me/contributing/package-hosting)
 for deployment and client verification details.
