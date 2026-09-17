@@ -50,6 +50,10 @@ jobs:
         with:
           cache-context: ${{ steps.results.outputs.cache-context }}
           recheck: ${{ github.event_name == 'schedule' || inputs.recheck == true }}
+      - name: Discard reconstructed build store
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: rm -rf .package-results/builds/store
       - name: Save verified package results
         if: ${{ !cancelled() && (github.ref == 'refs/heads/main' || github.event_name == 'pull_request') && steps.results.outputs.cache-key != '' && hashFiles('.package-results/**/record.json', '.package-results/builds/results/**/receipt.json') != '' }}
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
