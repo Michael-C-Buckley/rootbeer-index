@@ -35,5 +35,6 @@ runs:
         if [ "$SHOULD_RECHECK" = true ]; then options+=(--recheck); fi
         "$ENGINE" --catalog "$CATALOG" check
         "$ENGINE" --catalog "$CATALOG" export \
-          --registry tale/rootbeer-index --output result --workers 2 --jobs "$jobs" \
+          --registry tale/rootbeer-index --output "$RUNNER_TEMP/package-result" --workers 2 --jobs "$jobs" \
           --cache .package-results --cache-context "$CACHE_CONTEXT" "${options[@]}"
+        mv "$RUNNER_TEMP/package-result" result
