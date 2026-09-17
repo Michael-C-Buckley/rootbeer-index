@@ -15,7 +15,7 @@ return {
                     "-ec",
                     'printf \'%s\' "$1" > config.mak; printf "CURL_LDFLAGS = %s\\nCURL_CFLAGS = %s\\n" "$(pkg-config --static --libs libcurl)" "$(pkg-config --cflags libcurl)" >> config.mak',
                     "rootbeer-git",
-                    "prefix = /\nRUNTIME_PREFIX = YesPlease\nNO_GETTEXT = YesPlease\nNEEDS_LIBICONV = YesPlease\nNO_RUST = YesPlease\nNO_TCLTK = YesPlease\nPERL_PATH = /usr/bin/perl\nPYTHON_PATH = /usr/bin/python3\nUSE_LIBPCRE =\n",
+                    "prefix = /\nRUNTIME_PREFIX = YesPlease\nINSTALL_SYMLINKS = YesPlease\nNO_GETTEXT = YesPlease\nNEEDS_LIBICONV = YesPlease\nNO_RUST = YesPlease\nNO_TCLTK = YesPlease\nPERL_PATH = /usr/bin/perl\nPYTHON_PATH = /usr/bin/python3\nUSE_LIBPCRE =\n",
                 },
             },
             build = { { "make", "-j{jobs}" } },
@@ -37,20 +37,7 @@ return {
             archive = "tar.xz",
             strip_prefix = "git-{version}",
             patches = {
-                [[
---- a/exec-cmd.c
-+++ b/exec-cmd.c
-@@ -143,7 +143,8 @@
- 		trace_printf(
- 			"trace: resolved executable path from Darwin stack: %s\n",
- 			path);
--		strbuf_addstr(buf, path);
-+		if (!strbuf_realpath(buf, path, 0))
-+			return -1;
- 		return 0;
- 	}
- 	return -1;
-]],
+                '--- a/exec-cmd.c\n+++ b/exec-cmd.c\n@@ -143,7 +143,8 @@\n \t\ttrace_printf(\n \t\t\t"trace: resolved executable path from Darwin stack: %s\\n",\n \t\t\tpath);\n-\t\tstrbuf_addstr(buf, path);\n+\t\tif (!strbuf_realpath(buf, path, 0))\n+\t\t\treturn -1;\n \t\treturn 0;\n \t}\n \treturn -1;\n',
             },
         },
     },
@@ -68,7 +55,7 @@ return {
     },
     versions = {
         ["2.55.0"] = {
-            revision = 3,
+            revision = 4,
             inputs = {
                 source = {
                     sha256 = "457fdb04dc8728e007d4688695e6912e6f680727920f2a40bf11eacc17505357",
