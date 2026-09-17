@@ -15,7 +15,7 @@ return {
                     "-ec",
                     'printf \'%s\' "$1" > config.mak; printf "CURL_LDFLAGS = %s\\nCURL_CFLAGS = %s\\n" "$(pkg-config --static --libs libcurl)" "$(pkg-config --cflags libcurl)" >> config.mak',
                     "rootbeer-git",
-                    "prefix = /\nRUNTIME_PREFIX = YesPlease\nNO_GETTEXT = YesPlease\nNO_RUST = YesPlease\nNO_TCLTK = YesPlease\nPERL_PATH = /usr/bin/perl\nPYTHON_PATH = /usr/bin/python3\nUSE_LIBPCRE =\n",
+                    "prefix = /\nRUNTIME_PREFIX = YesPlease\nNO_GETTEXT = YesPlease\nNEEDS_LIBICONV = YesPlease\nNO_RUST = YesPlease\nNO_TCLTK = YesPlease\nPERL_PATH = /usr/bin/perl\nPYTHON_PATH = /usr/bin/python3\nUSE_LIBPCRE =\n",
                 },
             },
             build = { { "make", "-j{jobs}" } },
@@ -52,6 +52,7 @@ return {
     },
     versions = {
         ["2.55.0"] = {
+            revision = 2,
             inputs = {
                 source = {
                     sha256 = "457fdb04dc8728e007d4688695e6912e6f680727920f2a40bf11eacc17505357",
