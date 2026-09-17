@@ -36,6 +36,22 @@ return {
             url = "https://www.kernel.org/pub/software/scm/git/git-{version}.tar.xz",
             archive = "tar.xz",
             strip_prefix = "git-{version}",
+            patches = {
+                [[
+--- a/exec-cmd.c
++++ b/exec-cmd.c
+@@ -143,7 +143,8 @@
+ 		trace_printf(
+ 			"trace: resolved executable path from Darwin stack: %s\n",
+ 			path);
+-		strbuf_addstr(buf, path);
++		if (!strbuf_realpath(buf, path, 0))
++			return -1;
+ 		return 0;
+ 	}
+ 	return -1;
+]],
+            },
         },
     },
     outputs = {
@@ -52,7 +68,7 @@ return {
     },
     versions = {
         ["2.55.0"] = {
-            revision = 2,
+            revision = 3,
             inputs = {
                 source = {
                     sha256 = "457fdb04dc8728e007d4688695e6912e6f680727920f2a40bf11eacc17505357",
