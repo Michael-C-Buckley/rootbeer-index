@@ -2,9 +2,8 @@ return {
     schema = 2,
     name = "opencode",
     description = "Work with coding agents in the terminal",
-    default_version = "1.18.30",
     homepage = "https://github.com/anomalyco/opencode",
-    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
+    default_version = "1.18.31",
     upstream = {
         github = "anomalyco/opencode",
         repository_id = 975734319,
@@ -15,19 +14,23 @@ return {
             github = "anomalyco/opencode",
             tag = "v{version}",
             assets = {
-                ["x86_64-linux"] = "opencode-linux-x64-baseline.tar.gz",
-                ["aarch64-macos"] = "opencode-darwin-arm64.zip",
                 ["aarch64-linux"] = "opencode-linux-arm64.tar.gz",
+                ["aarch64-macos"] = "opencode-darwin-arm64.zip",
+                ["x86_64-linux"] = "opencode-linux-x64-baseline.tar.gz",
             },
         },
     },
+    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
     outputs = {
         bins = { "opencode" },
-        checks = { { "opencode", "--version" } },
+        checks = {
+            { "opencode", "--version" },
+        },
     },
     versions = {
         ["1.18.30"] = {
             revision = 2,
         },
+        ["1.18.31"] = {},
     },
 }

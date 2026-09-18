@@ -2,9 +2,8 @@ return {
     schema = 2,
     name = "argocd",
     description = "Manage Argo CD applications and deployments",
-    default_version = "3.5.2",
     homepage = "https://argo-cd.readthedocs.io",
-    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
+    default_version = "3.5.3",
     upstream = {
         github = "argoproj/argo-cd",
         repository_id = 120896210,
@@ -15,19 +14,23 @@ return {
             github = "argoproj/argo-cd",
             tag = "v{version}",
             assets = {
-                ["x86_64-linux"] = "argocd-linux-amd64",
-                ["aarch64-macos"] = "argocd-darwin-arm64",
                 ["aarch64-linux"] = "argocd-linux-arm64",
+                ["aarch64-macos"] = "argocd-darwin-arm64",
+                ["x86_64-linux"] = "argocd-linux-amd64",
             },
         },
     },
+    systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
     outputs = {
         bins = { "argocd" },
-        checks = { { "argocd", "version", "--client", "--short" } },
+        checks = {
+            { "argocd", "version", "--client", "--short" },
+        },
     },
     versions = {
         ["3.5.2"] = {
             revision = 2,
         },
+        ["3.5.3"] = {},
     },
 }
