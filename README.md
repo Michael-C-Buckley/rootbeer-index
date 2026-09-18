@@ -64,8 +64,18 @@ access and can take time. Open a pull request with the recipe changes; CI verifi
 platforms before publication.
 
 The [upstream discovery workflow](.github/workflows/discovery.yml) checks for new
-releases and produces a candidate catalog for review, including dependencies. It does not merge or publish
-them automatically.
+releases daily and automatically promotes candidates after verification on every
+supported platform. Publication checks artifact digests and catalog equality, commits
+updated recipes, and publishes the exact verified bundle without rebuilding. Stale
+catalog or pipeline inputs prevent promotion; subsequent scans retry using cached
+results. Packages without discovery rules remain visible as untracked.
+
+Rootbeer updates also run every 15 minutes, or immediately on a `rootbeer-update`
+repository dispatch from successful Rootbeer CI. Only successful main commits are
+eligible; older recipes remain pinned. Configure `INDEX_UPDATE_TOKEN` in `tale/rootbeer`
+with Contents write access to this repository to enable immediate dispatch. Polling
+works without it. `PUBLISH_INDEX` controls both automatic promotion and publication;
+main must allow the workflow token to push verified recipe updates.
 
 ## Report a problem
 

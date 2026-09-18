@@ -91,18 +91,18 @@ def select_run(repository, target)
   nil
 end
 
-def download_bundle(repository, run_id, destination)
+def download_bundle(repository, run_id, destination, name = 'verified-bundle')
   raise 'invalid run ID' unless run_id.match?(/\A[0-9]+\z/)
 
   artifacts = api("repos/#{repository}/actions/runs/#{run_id}/artifacts?per_page=100")
-  bundles = artifacts.fetch('artifacts').select { |artifact| artifact['name'] == 'verified-bundle' && !artifact['expired'] }
+  bundles = artifacts.fetch('artifacts').select { |artifact| artifact['name'] == name && !artifact['expired'] }
   raise 'expected one retained verified bundle' unless bundles.length == 1
 
   artifact = bundles.first
   digest = artifact.fetch('digest')
   raise 'artifact has no SHA-256 digest' unless digest.match?(/\Asha256:[0-9a-f]{64}\z/)
 
-  archive = File.join(ENV.fetch('RUNNER_TEMP'), 'verified-bundle.zip')
+  archive = File.join(ENV.fetch('RUNNER_TEMP'), "#{name}.zip")
   File.open(archive, 'wb') do |file|
     success = system('gh', 'api', "repos/#{repository}/actions/artifacts/#{artifact.fetch('id')}/zip", '--allow-escape-sequences', out: file)
     raise 'bundle download failed' unless success

@@ -1,5 +1,9 @@
 name: Publish packages
 on:
+  workflow_run:
+    workflows: [Upstream discovery]
+    types: [completed]
+    branches: [main]
   push:
     branches: [main]
     paths: ["engine-revision", "packages/**"]
@@ -21,21 +25,52 @@ concurrency:
 
 jobs:
   select:
-    if: github.ref == 'refs/heads/main' && github.event.repository.private == false
+    if: github.ref == 'refs/heads/main' && github.event.repository.private == false && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 30
     permissions:
       actions: read
-      contents: read
+      contents: write
       pull-requests: read
     outputs:
-      run_id: ${{ steps.bundle.outputs.run_id }}
+      run_id: ${{ steps.promotion.outputs.run_id || steps.bundle.outputs.run_id }}
+      revision: ${{ steps.promotion.outputs.revision || steps.current.outputs.revision }}
+      ready: ${{ github.event_name != 'workflow_run' || steps.promotion.outputs.ready == 'true' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_run' && 'main' || github.sha }}
+      - name: Record publication revision
+        id: current
+        run: echo "revision=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Check for a qualified discovery bundle
+        if: github.event_name == 'workflow_run'
+        id: discovery
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DISCOVERY_RUN: ${{ github.event.workflow_run.id }}
+        run: |
+          found=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$DISCOVERY_RUN/artifacts?per_page=100" \
+            --jq '[.artifacts[] | select(.name == "verified-bundle" and .expired == false)] | length == 1')
+          echo "qualified=$found" >> "$GITHUB_OUTPUT"
+      - uses: ./.github/actions/setup-engine
+        if: steps.discovery.outputs.qualified == 'true'
+        with:
+          runner: ubuntu-24.04
+          cache-scope: publish
+      - name: Promote verified discovery candidates
+        if: steps.discovery.outputs.qualified == 'true' && vars.PUBLISH_INDEX == 'true'
+        id: promotion
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DISCOVERY_RUN: ${{ github.event.workflow_run.id }}
+        run: |
+          gh auth setup-git
+          ruby .github/scripts/promote-updates.rb
       - name: Select an approved verification run
+        if: github.event_name != 'workflow_run'
         id: bundle
         env:
           GH_TOKEN: ${{ github.token }}
@@ -44,14 +79,14 @@ jobs:
 
   verify:
     needs: select
-    if: needs.select.outputs.run_id == ''
+    if: needs.select.outputs.ready == 'true' && needs.select.outputs.run_id == ''
     uses: ./.github/workflows/packages.yml
     with:
       recheck: ${{ github.event_name == 'schedule' || inputs.recheck == true }}
 
   publish:
     needs: [select, verify]
-    if: always() && github.ref == 'refs/heads/main' && needs.select.result == 'success' && (needs.verify.result == 'success' || needs.verify.result == 'skipped') && vars.PUBLISH_INDEX == 'true'
+    if: always() && github.ref == 'refs/heads/main' && needs.select.result == 'success' && needs.select.outputs.ready == 'true' && (needs.verify.result == 'success' || needs.verify.result == 'skipped') && vars.PUBLISH_INDEX == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     environment: package-publishing
@@ -65,6 +100,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          ref: ${{ needs.select.outputs.revision }}
       - uses: ./.github/actions/setup-engine
         with:
           runner: ubuntu-24.04

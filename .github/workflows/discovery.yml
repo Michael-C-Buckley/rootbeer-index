@@ -2,10 +2,18 @@ name: Upstream discovery
 on:
   push:
     branches: [main]
-    paths: ["engine-revision", "packages/**", ".github/workflows/discovery.yml", ".github/actions/**"]
+    paths: ["engine-revision", "packages/**", ".github/workflows/discovery.yml", ".github/actions/**", ".github/scripts/**"]
   workflow_dispatch:
+    inputs:
+      rootbeer_only:
+        description: Only update Rootbeer from successful main CI
+        type: boolean
+        default: false
+  repository_dispatch:
+    types: [rootbeer-update]
   schedule:
     - cron: "13 7 * * *"
+    - cron: "*/15 * * * *"
 
 permissions:
   contents: read
@@ -24,16 +32,37 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Check for a new CI-verified Rootbeer commit
+        id: rootbeer
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/rootbeer-update.py --probe
       - uses: ./.github/actions/setup-engine
+        if: (github.event_name != 'repository_dispatch' && github.event.schedule != '*/15 * * * *' && inputs.rootbeer_only != true) || steps.rootbeer.outputs.changed == 'true'
         id: engine
         with:
           runner: ubuntu-24.04
+      - name: Test update automation
+        if: steps.engine.outcome == 'success'
+        env:
+          ROOTBEER_FORGE: engine/target/release/rootbeer-forge
+        run: |
+          python3 tests/rootbeer-update_test.py
+          ruby tests/promote-updates_test.rb
       - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        if: github.event_name != 'repository_dispatch' && github.event.schedule != '*/15 * * * *' && inputs.rootbeer_only != true
         with:
           path: .upstream-metadata
           key: upstream-metadata-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: upstream-metadata-v1-
+      - name: Prepare Rootbeer-only scan
+        if: github.event_name == 'repository_dispatch' || github.event.schedule == '*/15 * * * *' || inputs.rootbeer_only == true
+        run: |
+          mkdir -p candidates
+          printf '%s\n' '{"updated":[],"rules_changed":[],"errors":{},"untracked":[]}' > candidates/report.json
+          printf '%s\n' '# Rootbeer update' > candidates/summary.md
       - name: Discover updates
+        if: github.event_name != 'repository_dispatch' && github.event.schedule != '*/15 * * * *' && inputs.rootbeer_only != true
         id: discovery
         continue-on-error: true
         env:
@@ -41,13 +70,18 @@ jobs:
         run: |
           engine/target/release/rootbeer-forge --catalog packages updates \
             --cache .upstream-metadata --output candidates
+      - name: Discover CI-verified Rootbeer source
+        if: steps.rootbeer.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/rootbeer-update.py
       - name: Summarize candidates and exceptions
         id: report
         if: always()
         run: |
           test -f candidates/report.json
           cat candidates/summary.md >> "$GITHUB_STEP_SUMMARY"
-          echo "changed=$(jq '.updated | length > 0' candidates/report.json)" >> "$GITHUB_OUTPUT"
+          echo "changed=$(jq '(.updated + .rules_changed) | length > 0' candidates/report.json)" >> "$GITHUB_OUTPUT"
       - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: always() && steps.discovery.outcome != 'skipped' && github.ref == 'refs/heads/main'
         with:
@@ -62,7 +96,7 @@ jobs:
           if-no-files-found: error
       - name: Surface discovery failures
         if: steps.discovery.outcome == 'failure'
-        run: exit 1
+        run: echo "::warning::Some upstreams failed; see the discovery report. Successful candidates continue independently."
 
   qualify:
     needs: discover
@@ -103,7 +137,36 @@ jobs:
           key: ${{ steps.results.outputs.cache-key }}
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
+          name: engine-${{ matrix.runner }}
+          path: engine/target/release/rootbeer-forge
+          retention-days: 14
+          if-no-files-found: error
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
           name: qualified-${{ matrix.runner }}
           path: result/
+          retention-days: 14
+          if-no-files-found: error
+
+  assemble:
+    needs: [discover, qualify]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: engine-ubuntu-24.04
+          path: engine-bin
+      - run: chmod +x engine-bin/rootbeer-forge
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: qualified-*
+          path: inputs
+      - name: Require complete version and platform coverage
+        run: engine-bin/rootbeer-forge assemble --inputs inputs --output bundle
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: verified-bundle
+          path: bundle/
           retention-days: 14
           if-no-files-found: error
