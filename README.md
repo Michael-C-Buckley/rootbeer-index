@@ -70,10 +70,10 @@ updated recipes, and publishes the exact verified bundle without rebuilding. Sta
 catalog or pipeline inputs prevent promotion; subsequent scans retry using cached
 results. Packages without discovery rules remain visible as untracked.
 
-Rootbeer updates also run every 15 minutes, or immediately on a `rootbeer-update`
-repository dispatch from successful Rootbeer CI. Only successful main commits are
-eligible; older recipes remain pinned. Configure `INDEX_UPDATE_TOKEN` in `tale/rootbeer`
-with Contents write access to this repository to enable immediate dispatch. Polling
+Rootbeer updates also run every 15 minutes, or immediately when successful Rootbeer
+CI pushes the `rootbeer-update` request file (repository dispatch is also supported). Only successful main commits are
+eligible; older recipes remain pinned. Configure `INDEX_UPDATE_SSH_KEY` in `tale/rootbeer`
+with a writable deploy key scoped to this repository to enable immediate notification. Polling
 works without it. `PUBLISH_INDEX` controls both automatic promotion and publication;
 main must allow the workflow token to push verified recipe updates.
 

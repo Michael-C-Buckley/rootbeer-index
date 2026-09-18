@@ -2,7 +2,7 @@ name: Upstream discovery
 on:
   push:
     branches: [main]
-    paths: ["engine-revision", "packages/**", ".github/workflows/discovery.yml", ".github/actions/**", ".github/scripts/**"]
+    paths: ["rootbeer-update", "engine-revision", "packages/**", ".github/workflows/discovery.yml", ".github/actions/**", ".github/scripts/**"]
   workflow_dispatch:
     inputs:
       rootbeer_only:
@@ -38,7 +38,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: python3 .github/scripts/rootbeer-update.py --probe
       - uses: ./.github/actions/setup-engine
-        if: (github.event_name != 'repository_dispatch' && github.event.schedule != '*/15 * * * *' && inputs.rootbeer_only != true) || steps.rootbeer.outputs.changed == 'true'
+        if: >-
+          (github.event_name != 'repository_dispatch' && github.event.head_commit.message != 'ci(rootbeer): request update' && github.event.schedule != '*/15 * * * *' && inputs.rootbeer_only != true) || steps.rootbeer.outputs.changed == 'true'
         id: engine
         with:
           runner: ubuntu-24.04
@@ -50,19 +51,22 @@ jobs:
           python3 tests/rootbeer-update_test.py
           ruby tests/promote-updates_test.rb
       - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        if: github.event_name != 'repository_dispatch' && github.event.schedule != '*/15 * * * *' && inputs.rootbeer_only != true
+        if: >-
+          github.event_name != 'repository_dispatch' && github.event.head_commit.message != 'ci(rootbeer): request update' && github.event.schedule != '*/15 * * * *' && inputs.rootbeer_only != true
         with:
           path: .upstream-metadata
           key: upstream-metadata-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: upstream-metadata-v1-
       - name: Prepare Rootbeer-only scan
-        if: github.event_name == 'repository_dispatch' || github.event.schedule == '*/15 * * * *' || inputs.rootbeer_only == true
+        if: >-
+          github.event_name == 'repository_dispatch' || github.event.head_commit.message == 'ci(rootbeer): request update' || github.event.schedule == '*/15 * * * *' || inputs.rootbeer_only == true
         run: |
           mkdir -p candidates
           printf '%s\n' '{"updated":[],"rules_changed":[],"errors":{},"untracked":[]}' > candidates/report.json
           printf '%s\n' '# Rootbeer update' > candidates/summary.md
       - name: Discover updates
-        if: github.event_name != 'repository_dispatch' && github.event.schedule != '*/15 * * * *' && inputs.rootbeer_only != true
+        if: >-
+          github.event_name != 'repository_dispatch' && github.event.head_commit.message != 'ci(rootbeer): request update' && github.event.schedule != '*/15 * * * *' && inputs.rootbeer_only != true
         id: discovery
         continue-on-error: true
         env:
