@@ -10,6 +10,9 @@ inputs:
   engine:
     description: Path to the package engine executable
     default: engine/target/release/rootbeer-forge
+  plan-only:
+    description: Report the package plan without executing builds or checks
+    default: "false"
   recheck:
     description: Rebuild and recheck every package
     default: "false"
@@ -21,6 +24,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
         CACHE_CONTEXT: ${{ inputs.cache-context }}
+        PLAN_ONLY: ${{ inputs.plan-only }}
         SHOULD_RECHECK: ${{ inputs.recheck }}
         CATALOG: ${{ inputs.catalog }}
         ENGINE: ${{ inputs.engine }}
@@ -45,6 +49,7 @@ runs:
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
             summary.write(f"Package plan: {counts['reuse']} reusable, {counts['qualify']} need qualification.\n")
         PYTHON
+        if [ "$PLAN_ONLY" = true ]; then exit 0; fi
         "$ENGINE" --catalog "$CATALOG" export \
           --registry tale/rootbeer-index --output "$RUNNER_TEMP/package-result" --workers 2 --jobs "$jobs" \
           --cache .package-results --cache-context "$CACHE_CONTEXT" "${options[@]}"

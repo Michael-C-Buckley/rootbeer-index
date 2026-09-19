@@ -5,12 +5,20 @@ on:
     paths: ["engine-revision", "packages/**", ".github/workflows/packages.yml", ".github/actions/**", ".github/scripts/**", "tests/**"]
   workflow_dispatch:
     inputs:
+      plan-only:
+        description: Report reuse and required qualification without building packages
+        type: boolean
+        default: false
       recheck:
         description: Rebuild and recheck every package
         type: boolean
         default: false
   workflow_call:
     inputs:
+      plan-only:
+        description: Report reuse and required qualification without building packages
+        type: boolean
+        default: false
       recheck:
         description: Rebuild and recheck every package
         type: boolean
@@ -73,6 +81,7 @@ jobs:
           cache-context: ${{ steps.results.outputs.cache-context }}
           recheck: ${{ inputs.recheck }}
           catalog: ${{ inputs.catalog || 'packages' }}
+          plan-only: ${{ inputs.plan-only }}
       - name: Retain package work plan
         if: ${{ !cancelled() && hashFiles('package-plan.json') != '' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -81,12 +90,13 @@ jobs:
           path: package-plan.json
           retention-days: ${{ inputs.retention-days || 14 }}
       - name: Save verified package results
-        if: ${{ !cancelled() && steps.results.outcome == 'success' }}
+        if: ${{ !cancelled() && inputs.plan-only != true && steps.results.outcome == 'success' }}
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .package-results
           key: ${{ steps.results.outputs.cache-key }}
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: inputs.plan-only != true
         with:
           name: engine-${{ matrix.runner }}
           overwrite: true
@@ -94,6 +104,7 @@ jobs:
           retention-days: ${{ inputs.retention-days || 14 }}
           if-no-files-found: error
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: inputs.plan-only != true
         with:
           name: packages-${{ matrix.runner }}
           overwrite: true
@@ -102,6 +113,7 @@ jobs:
           if-no-files-found: error
 
   assemble:
+    if: inputs.plan-only != true
     needs: verify
     runs-on: ubuntu-24.04
     timeout-minutes: 10
