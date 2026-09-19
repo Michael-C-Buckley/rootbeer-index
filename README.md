@@ -96,8 +96,9 @@ Update the pin together with any required recipe or workflow migrations.
 
 Each of three platform jobs downloads Forge from the pinned commit's GitHub
 release and verifies its main-CI attestation before execution. Missing releases or
-invalid attestations stop the job. Export uses two package workers, sharing a
-compiler job budget detected from the runner's CPU count. Dependencies
+invalid attestations stop the job. Package preparation separately installs the
+pinned Rust compiler used by source recipes. Export uses two package workers,
+sharing a compiler job budget detected from the runner's CPU count. Dependencies
 run before consumers; independent source builds can overlap. Shared dependencies
 compile once per export, including full rechecks.
 
