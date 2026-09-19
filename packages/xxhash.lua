@@ -3,7 +3,7 @@ return {
     name = "xxhash",
     description = "Fast non-cryptographic hashing library and checksum tool",
     homepage = "https://xxhash.com/",
-    default_version = "0.8.3",
+    default_version = "0.8.4",
     upstream = {
         github = "Cyan4973/xxHash",
         repository_id = 19330466,
@@ -56,6 +56,14 @@ return {
                     sha256 = "aae608dfe8213dfd05d909a57718ef82f30722c392344583d3f39050c7f29a80",
                 },
             },
+        },
+        ["0.8.4"] = {
+            inputs = {
+                source = {
+                    sha256 = "5738270935e7c3d38a79b3adf7c9692566ce7895a25f67de43ad52ab504acd32",
+                },
+            },
+            systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
         },
     },
 }

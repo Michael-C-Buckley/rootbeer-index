@@ -3,7 +3,7 @@ return {
     name = "uv",
     description = "Manage Python projects, tools, and environments",
     homepage = "https://github.com/astral-sh/uv",
-    default_version = "0.12.16",
+    default_version = "0.12.17",
     upstream = {
         github = "astral-sh/uv",
         repository_id = 699532645,
@@ -34,5 +34,6 @@ return {
             revision = 2,
         },
         ["0.12.16"] = {},
+        ["0.12.17"] = {},
     },
 }
