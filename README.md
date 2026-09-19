@@ -88,8 +88,9 @@ For problems with `rb` itself, use the [Rootbeer repository](https://github.com/
 This repository owns package discovery, build checks, and publication. The engine
 repository owns the tools and their regression tests.
 
-The [publication workflow](.github/workflows/packages.yml) verifies recipes and
-publishes the signed index using `rootbeer-forge`. The exact engine commit lives in
+The [verification workflow](.github/workflows/packages.yml) qualifies recipes; the
+[publication workflow](.github/workflows/publish.yml) publishes the signed index
+using `rootbeer-forge`. The exact engine commit lives in
 [`engine-revision`](engine-revision); changing it runs package CI and discovery.
 Update the pin together with any required recipe or workflow migrations.
 
@@ -98,11 +99,35 @@ sharing a compiler job budget detected from the runner's CPU count. Dependencies
 run before consumers; independent source builds can overlap. Shared dependencies
 compile once per export, including full rechecks.
 
+Cache identities separate the four backend implementations from shared build
+behavior. A Rust backend edit changes Rust compilation and any qualification whose
+dependency closure uses Rust; independent C results remain reusable. Shared or
+unclassified build code, manifests, the workspace lockfile, and runner-image changes
+still invalidate conservatively. Rust toolchain identity is recorded by Forge for
+Rust closures, not injected into every platform cache context.
+
 Verified results are cached by engine inputs and build environment, including
 successful work from failed runs. Compatible results survive unrelated engine
 commits. PR caches remain scoped to that PR and support its retries; main's caches
-also seed new PRs. Promoting a verified bundle does not copy a PR cache into main.
-Scheduled full checks refresh main's cache.
+also seed new PRs. Approved OCI candidates can seed an empty cache independently
+of Actions cache retention. Scheduled full checks refresh qualification evidence.
+
+Actions saves the opaque Forge cache after successful or failed verification.
+Retries restore the current run's most recent cache in the same runner environment.
+An explicit recheck uses a run-specific namespace, so older results cannot satisfy
+it; retries reuse only work completed within that recheck. Cache contents and their
+validation belong to Forge. Workflows do not parse or rewrite cache entries.
+
+Caches are temporary and may be evicted. A retry without retained results stops
+for investigation rather than silently restarting completed builds. Cancelled jobs
+or jobs that time out before saving may lose their latest work. Approved complete
+candidates remain in OCI independently of the Actions cache.
+
+Each platform emits `package-plan-<runner>-<attempt>` with Forge's JSON decisions
+and adds reuse/qualification counts to the job summary. Verified bundles remain
+in Actions artifacts for 14 days; the collector retains complete candidates in
+OCI before those artifacts expire. PR caches remain isolated from main.
+
 Package updates are independent of Rootbeer binary
 releases. See [index hosting and trust](https://rootbeer.tale.me/contributing/package-hosting)
 for deployment and client verification details.
@@ -128,13 +153,67 @@ license and reject source selectors.
 
 ## Build verification and publication
 
-Pull requests run package verification without publishing credentials. Successful
-runs retain a verified bundle. After merge, `Publish packages` reuses that bundle
-only when the recipes, engine pin, and verification workflow and actions match the
-approved inputs. A changed pipeline, missing bundle, or explicit recheck causes a
-fresh verification build.
+Pull requests run package verification without publishing credentials. A separate
+[collector](.github/workflows/retain-results.yml) checks out trusted main, builds
+its own pinned Forge, and admits only unchanged verification tooling from
+same-repository PRs or allowed main events. It checks successful assembly, GitHub
+artifact digests, complete qualifications, and catalog equality. Source Git objects
+are read as data; uploaded executables are never run by the collector or publisher.
+Fork results require a same-repository verification run before admission.
 
-The publishing job builds its own engine in a separate cache namespace. It checks
-the downloaded bundle's GitHub artifact digest and compares its catalog with the
-merged recipes before uploading binaries and signing the index. It never runs an
-engine executable uploaded by a pull request. Scheduled runs perform full rechecks.
+The collector stores raw files in `ghcr.io/tale/rootbeer-index/results` and attests
+the resulting OCI digest. `sha256-<digest>` tags retain immutable candidates;
+`catalog-<digest>` and `collector-<run>-<attempt>` tags are locators only. Readers
+resolve a locator once, verify the main collector's attestation, and consume exact
+content by digest. Keep these images and their OCI attestation referrers indefinitely.
+Actions artifacts can then expire without preventing publication.
+
+Publication matches that candidate to the approved catalog and engine pin, checks
+that main has not advanced, and signs the existing bundle. Discovery promotion uses
+its retained report and recipes. Publication adds a separate catalog-approval
+attestation and advances `accepted`. Builds import only candidates with both the
+collector and publication attestations. Registry write/signing credentials remain
+in separate trusted jobs. Qualification keys still decide per-package reuse;
+importing evidence never executes package code. For cache seeding, the reader first
+fetches authenticated index/qualification metadata and asks Forge's `candidate-files`
+command for the current platform's receipts and runtime archives. Only those blobs
+are downloaded and imported with `--system`. Full publication still requires every
+platform's contents; a partial transfer cannot satisfy its verification gate.
+
+Automatic publication with missing evidence waits for collection or repair; it
+never falls back to a catalog build. A manual publication may qualify missing
+inputs using compatible caches. Scheduled runs and manual `recheck` explicitly
+requalify everything. A changed engine pin requires a candidate from that pin;
+unrelated engine changes still reuse qualifications through Forge's semantic
+engine identity. Changed verification tooling must land on main before producing
+admissible evidence.
+
+### Rollout and recovery
+
+1. Push the engine commit, then this repository's matching `engine-revision`.
+2. Run the branch-only [retention fixture](.github/workflows/candidate-fixture.yml).
+   It builds one synthetic package on Linux x86-64 and ARM64, assembles and attests
+   it under the separate `ci-fixture` image, then downloads only x86-64 contents into
+   an empty cache. It checks exact bytes, skipped foreign blobs, no rebuild, and
+   rejection of that partial bundle by the complete-publication gate.
+   Production admission must reject its branch signer. No catalog jobs run.
+3. After review and merge, retain and publish a candidate with the new engine.
+   Existing bundles without qualification records cannot be upgraded from archives.
+   Inspect caches and Forge plans before explicitly requesting missing verification.
+4. Set repository variable `DURABLE_PACKAGE_RESULTS=true` after the `results` image
+   and its first approved `accepted` candidate exist. Before this switch, cross-run
+   OCI seeding is disabled; collectors and publication from their events still work.
+   Allow Actions read access to this package (including PR jobs), or make it public.
+
+If only fixture retention fails, dispatch `candidate-fixture.yml` on the feature
+branch with `source-run` set to the completed producer run. Its build jobs are
+skipped and the existing fixture artifacts are reused. Dispatch with `cache-retry=true`
+to test failed-package recovery independently. Its first attempt deliberately fails
+after one package succeeds; rerun the failed job to verify that only the failed
+package builds and the successful receipt stays identical.
+
+A failed collection can be rerun while producer artifacts remain available. A
+failed publication retries the same digest; it does not rebuild. If main advanced,
+select evidence for the current catalog instead of replaying an older release.
+If evidence expired before collection, recover it from compatible caches and explicitly qualify only missing inputs. Digest, attestation,
+and authentication failures are errors, never cache misses.
