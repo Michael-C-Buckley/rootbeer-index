@@ -164,7 +164,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', required=True, type=int)
     parser.add_argument('--probe', action='store_true')
-    parser.add_argument('--engine', default='engine/target/release/rootbeer-forge')
+    parser.add_argument('--engine', default='engine-bin/rootbeer-forge')
     parser.add_argument('--output', type=Path, default=Path('retained'))
     args = parser.parse_args()
     if args.run <= 0:

@@ -101,7 +101,7 @@ def main():
         manifest = tar.extractfile(f'rootbeer-{revision}/crates/rootbeer-cli/Cargo.toml')
         version = tomllib.loads(manifest.read().decode())['package']['version']
     catalog = json.loads(subprocess.check_output([
-        'engine/target/release/rootbeer-forge', '--catalog', 'packages', 'index']))
+        'engine-bin/rootbeer-forge', '--catalog', 'packages', 'index']))
     package = catalog['packages']['rootbeer']
     resolved = package['versions'][package['default_version']]['build']
     build = {key: value for key, value in resolved.items()

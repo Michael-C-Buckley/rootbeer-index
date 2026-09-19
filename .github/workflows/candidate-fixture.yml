@@ -40,7 +40,7 @@ jobs:
           runner: ${{ matrix.runner }}
       - name: Test candidate admission and publication
         env:
-          ROOTBEER_FORGE: engine/target/release/rootbeer-forge
+          ROOTBEER_FORGE: engine-bin/rootbeer-forge
         run: |
           python3 tests/candidate-store_test.py
       - name: Build one fixture without registry credentials
@@ -118,7 +118,7 @@ jobs:
           recheck: "true"
       - name: Test failure and recovery with the actual Forge cache
         env:
-          ROOTBEER_FORGE: engine/target/release/rootbeer-forge
+          ROOTBEER_FORGE: engine-bin/rootbeer-forge
           CACHE_CONTEXT: ${{ steps.results.outputs.cache-context }}
         run: python3 tests/cache-fixture.py
       - name: Save completed work even when another package failed

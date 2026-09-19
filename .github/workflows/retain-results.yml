@@ -42,7 +42,6 @@ jobs:
         if: steps.probe.outputs.ready == 'true'
         with:
           runner: ubuntu-24.04
-          cache-scope: publish
       - uses: oras-project/setup-oras@1d808f7d7f6995cc68b7bf507bfe5c5446e1dc9d # v2.0.1
         if: steps.probe.outputs.ready == 'true'
         with:

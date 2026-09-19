@@ -46,7 +46,7 @@ jobs:
       - name: Test update automation
         if: steps.engine.outcome == 'success'
         env:
-          ROOTBEER_FORGE: engine/target/release/rootbeer-forge
+          ROOTBEER_FORGE: engine-bin/rootbeer-forge
         run: |
           python3 tests/rootbeer-update_test.py
       - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -71,7 +71,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          engine/target/release/rootbeer-forge --catalog packages updates \
+          engine-bin/rootbeer-forge --catalog packages updates \
             --cache .upstream-metadata --output candidates
       - name: Discover CI-verified Rootbeer source
         if: steps.rootbeer.outputs.changed == 'true'

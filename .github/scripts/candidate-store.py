@@ -287,7 +287,7 @@ def main():
     parser.add_argument('--tag')
     parser.add_argument('--output', type=Path, default=Path('retained'))
     parser.add_argument('--catalog', type=Path, default=Path('packages'))
-    parser.add_argument('--engine', default='engine/target/release/rootbeer-forge')
+    parser.add_argument('--engine', default='engine-bin/rootbeer-forge')
     args = parser.parse_args()
     if args.operation == 'approve':
         value = metadata(args.output)

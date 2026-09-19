@@ -9,7 +9,7 @@ inputs:
     default: packages
   engine:
     description: Path to the package engine executable
-    default: engine/target/release/rootbeer-forge
+    default: engine-bin/rootbeer-forge
   plan-only:
     description: Report the package plan without executing builds or checks
     default: "false"

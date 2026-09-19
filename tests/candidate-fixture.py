@@ -153,7 +153,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('operation', choices=['prepare', 'combine', 'retain', 'consume', 'local'])
     parser.add_argument('--root', type=Path, default=Path('fixture'))
-    parser.add_argument('--engine', default='engine/target/release/rootbeer-forge')
+    parser.add_argument('--engine', default='engine-bin/rootbeer-forge')
     parser.add_argument('--reference')
     parser.add_argument('--systems', nargs='+')
     parser.add_argument('--inputs', type=Path, default=Path('fixture-inputs'))

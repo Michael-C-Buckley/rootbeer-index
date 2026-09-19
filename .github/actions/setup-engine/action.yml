@@ -1,55 +1,40 @@
 name: Set up package engine
-description: Build the pinned Rootbeer engine with a separate cache for publishing.
+description: Download and verify the Forge binary for the pinned engine commit.
 inputs:
   runner:
     description: Runner image label used by the job
     required: true
-  cache-scope:
-    description: Engine cache namespace (verify or publish)
-    default: verify
 outputs:
   revision:
     description: Full Rootbeer commit SHA from engine-revision
-    value: ${{ steps.pin.outputs.revision }}
+    value: ${{ steps.install.outputs.revision }}
 runs:
   using: composite
   steps:
-    - name: Read engine revision
-      id: pin
+    - name: Install attested Forge binary
+      id: install
       shell: bash
       env:
-        CACHE_SCOPE: ${{ inputs.cache-scope }}
+        GH_TOKEN: ${{ github.token }}
+        ENGINE_RUNNER: ${{ inputs.runner }}
       run: |
         revision=$(cat engine-revision)
         [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
+        case "$ENGINE_RUNNER" in
+          ubuntu-24.04) target=x86_64-unknown-linux-gnu ;;
+          ubuntu-24.04-arm) target=aarch64-unknown-linux-gnu ;;
+          macos-15) target=aarch64-apple-darwin ;;
+          *) echo "Unsupported Forge runner: $ENGINE_RUNNER" >&2; exit 1 ;;
+        esac
+        directory=$(mktemp -d)
+        trap 'rm -rf "$directory"' EXIT
+        binary="$directory/rootbeer-forge-$target"
+        gh release download "forge-$revision" --repo tale/rootbeer \
+          --pattern "rootbeer-forge-$target" --dir "$directory"
+        gh attestation verify "$binary" --repo tale/rootbeer \
+          --signer-workflow tale/rootbeer/.github/workflows/build.yml \
+          --source-ref refs/heads/main --source-digest "$revision" --deny-self-hosted-runners
+        mkdir -p engine-bin
+        install -m 0755 "$binary" engine-bin/rootbeer-forge
+        engine-bin/rootbeer-forge --help >/dev/null
         printf 'revision=%s\n' "$revision" >> "$GITHUB_OUTPUT"
-        [[ "$CACHE_SCOPE" =~ ^(verify|publish)$ ]]
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      with:
-        repository: tale/rootbeer
-        ref: ${{ steps.pin.outputs.revision }}
-        path: engine
-        persist-credentials: false
-    - uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de # master
-      with:
-        toolchain: 1.98.1
-    - name: Identify Rust toolchain
-      id: rust
-      shell: bash
-      run: echo "version=$(rustc --version | shasum -a 256 | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
-    - name: Cache package engine
-      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          engine/target
-        key: engine-${{ inputs.cache-scope }}-v1-${{ inputs.runner }}-${{ steps.rust.outputs.version }}-${{ steps.pin.outputs.revision }}-${{ hashFiles('engine/Cargo.lock') }}
-        restore-keys: |
-          engine-${{ inputs.cache-scope }}-v1-${{ inputs.runner }}-${{ steps.rust.outputs.version }}-
-    - name: Build package engine
-      shell: bash
-      working-directory: engine
-      run: |
-        export RB_BUILD_TIMESTAMP="$(git show -s --format=%cI HEAD)"
-        cargo build --locked --release --bin rootbeer-forge
