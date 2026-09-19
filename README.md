@@ -94,8 +94,10 @@ using `rootbeer-forge`. The exact engine commit lives in
 [`engine-revision`](engine-revision); changing it runs package CI and discovery.
 Update the pin together with any required recipe or workflow migrations.
 
-Each of three platform jobs builds its engine and exports with two package workers,
-sharing a compiler job budget detected from the runner's CPU count. Dependencies
+Each of three platform jobs downloads Forge from the pinned commit's GitHub
+release and verifies its main-CI attestation before execution. Missing releases or
+invalid attestations stop the job. Export uses two package workers, sharing a
+compiler job budget detected from the runner's CPU count. Dependencies
 run before consumers; independent source builds can overlap. Shared dependencies
 compile once per export, including full rechecks.
 
@@ -123,8 +125,10 @@ for investigation rather than silently restarting completed builds. Cancelled jo
 or jobs that time out before saving may lose their latest work. Approved complete
 candidates remain in OCI independently of the Actions cache.
 
-Each platform emits `package-plan-<runner>-<attempt>` with Forge's JSON decisions
-and adds reuse/qualification counts to the job summary. Verified bundles remain
+Dispatch the verification workflow with `plan-only=true` to inspect reuse without
+executing package builds or checks. Each platform emits
+`package-plan-<runner>-<attempt>` with Forge's JSON decisions and adds
+reuse/qualification counts to the job summary. Verified bundles remain
 in Actions artifacts for 14 days; the collector retains complete candidates in
 OCI before those artifacts expire. PR caches remain isolated from main.
 
@@ -154,8 +158,8 @@ license and reject source selectors.
 ## Build verification and publication
 
 Pull requests run package verification without publishing credentials. A separate
-[collector](.github/workflows/retain-results.yml) checks out trusted main, builds
-its own pinned Forge, and admits only unchanged verification tooling from
+[collector](.github/workflows/retain-results.yml) checks out trusted main, installs
+its own attested Forge, and admits only unchanged verification tooling from
 same-repository PRs or allowed main events. It checks successful assembly, GitHub
 artifact digests, complete qualifications, and catalog equality. Source Git objects
 are read as data; uploaded executables are never run by the collector or publisher.
