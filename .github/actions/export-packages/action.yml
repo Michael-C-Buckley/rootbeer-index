@@ -102,7 +102,7 @@ runs:
         if [ "$SHOULD_RECHECK" = true ] && [ "$GITHUB_RUN_ATTEMPT" = 1 ]; then options+=(--recheck); fi
         status=0
         "$ENGINE" --catalog "$CATALOG" export --timeout "$BUILD_TIMEOUT" \
-          --registry tale/rootbeer-index --output "$RUNNER_TEMP/package-result" --workers 2 --jobs "$jobs" \
+          --registry tale/rootbeer-index --output "$RUNNER_TEMP/package-result" --workers 1 --jobs "$jobs" \
           --cache .package-results --cache-context "$CACHE_CONTEXT" "${options[@]}" || status=$?
         if [ "$status" -le 1 ]; then echo "quiescent=true" >> "$GITHUB_OUTPUT"; fi
         if [ "$status" != 0 ]; then exit "$status"; fi

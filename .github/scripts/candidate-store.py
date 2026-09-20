@@ -1,4 +1,5 @@
 import argparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import hashlib
 import json
 import os
@@ -95,8 +96,7 @@ def pull_files(reference, destination, engine=None):
         by_name = {layer['annotations']['org.opencontainers.image.title']: layer for layer in layers}
         metadata_names = {name for name in names if name in ['candidate.json', 'bundle/index.json']
                           or name.startswith('bundle/qualifications/')}
-        for name in sorted(metadata_names):
-            fetch_layer(by_name[name], staging)
+        fetch_layers([by_name[name] for name in sorted(metadata_names)], staging)
         selected = names - metadata_names
         if engine:
             plan = json.loads(command(engine, 'candidate-files', str(staging / 'bundle')))
@@ -105,10 +105,29 @@ def pull_files(reference, destination, engine=None):
             selected = {'bundle/' + name for name in plan['files']}
             if not selected <= names or any(not FILE.fullmatch(name) for name in selected):
                 raise ValueError('candidate is missing required platform layers')
-        for name in sorted(selected):
-            fetch_layer(by_name[name], staging)
+        fetch_layers([by_name[name] for name in sorted(selected)], staging)
         staging.rename(destination)
     return json.loads((destination / 'candidate.json').read_text())
+
+
+def fetch_layers(layers, directory):
+    if not layers:
+        return
+    total_bytes = sum(layer['size'] for layer in layers)
+    print(f'Downloading {len(layers)} candidate files ({total_bytes / 1024**2:.1f} MiB), 8 at a time', flush=True)
+    completed_bytes = 0
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        futures = {executor.submit(fetch_layer, layer, directory): layer for layer in layers}
+        try:
+            for completed, future in enumerate(as_completed(futures), 1):
+                future.result()
+                completed_bytes += futures[future]['size']
+                if completed % 25 == 0 or completed == len(layers):
+                    print(f'Verified {completed}/{len(layers)} files ({completed_bytes / 1024**2:.1f}/{total_bytes / 1024**2:.1f} MiB)', flush=True)
+        except Exception:
+            for future in futures:
+                future.cancel()
+            raise
 
 
 def fetch_layer(layer, directory):

@@ -45,6 +45,7 @@ concurrency:
 
 jobs:
   verify:
+    name: Verify (${{ matrix.runner }}, batch ${{ matrix.shard }})
     if: github.event.repository.private != true
     permissions:
       contents: read
