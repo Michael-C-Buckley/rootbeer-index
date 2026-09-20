@@ -217,6 +217,9 @@ def promote(value, directory, engine, catalog):
     source = revision(producer['revision'])
     command('git', 'fetch', '--no-tags', 'origin', source)
     target = revision(command('git', 'rev-parse', 'HEAD'))
+    if same_inputs(source, target) and catalog_digest(engine, catalog) == value['catalog_sha256']:
+        command(engine, '--catalog', str(catalog), 'verify-candidate', str(directory / 'bundle'))
+        return target
     trailer = f'Verified-Discovery-Run: {run_id}'
     paths = ('packages', *VERIFIER_INPUTS)
     is_retry = trailer in command('git', 'show', '-s', '--format=%B', target).splitlines() and same_inputs(source, f'{target}^', paths)

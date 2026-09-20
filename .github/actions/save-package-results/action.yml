@@ -1,0 +1,30 @@
+name: Save package results
+description: Save the opaque Forge cache and require an exact retained entry.
+inputs:
+  key:
+    description: Cache key for this platform and run attempt
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: .package-results
+        key: ${{ inputs.key }}
+    - name: Verify retained results
+      id: retained
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: .package-results
+        key: ${{ inputs.key }}
+        lookup-only: true
+        fail-on-cache-miss: true
+    - name: Require this attempt's exact cache
+      shell: bash
+      env:
+        CACHE_HIT: ${{ steps.retained.outputs.cache-hit }}
+      run: |
+        if [ "$CACHE_HIT" != true ]; then
+          echo 'Package results were not retained under this attempt’s exact key.' >&2
+          exit 1
+        fi

@@ -115,7 +115,10 @@ commits. PR caches remain scoped to that PR and support its retries; main's cach
 also seed new PRs. Approved OCI candidates can seed an empty cache independently
 of Actions cache retention. Scheduled full checks refresh qualification evidence.
 
-Actions saves the opaque Forge cache after successful or failed verification.
+Forge owns the execution deadline and worker cleanup. Actions gives Forge a
+shorter budget than the job deadline, then saves its opaque cache after successful
+or failed verification. Retention must produce an exact cache entry; a warning
+alone does not count as success. Tooling-only edits do not trigger catalog builds.
 Retries restore the current run's most recent cache in the same runner environment.
 An explicit recheck uses a run-specific namespace, so older results cannot satisfy
 it; retries reuse only work completed within that recheck. Cache contents and their

@@ -123,7 +123,6 @@ jobs:
         run: python3 tests/cache-fixture.py
       - name: Save completed work even when another package failed
         if: ${{ !cancelled() && steps.results.outcome == 'success' }}
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        uses: ./.github/actions/save-package-results
         with:
-          path: .package-results
           key: ${{ steps.results.outputs.cache-key }}

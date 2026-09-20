@@ -2,7 +2,7 @@ name: Upstream discovery
 on:
   push:
     branches: [main]
-    paths: ["rootbeer-update", "engine-revision", "packages/**", ".github/workflows/discovery.yml", ".github/actions/**", ".github/scripts/**"]
+    paths: ["rootbeer-update", "engine-revision", "packages/**"]
   workflow_dispatch:
     inputs:
       rootbeer_only:

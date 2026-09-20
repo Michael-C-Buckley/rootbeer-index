@@ -288,6 +288,15 @@ class PromotionTests(unittest.TestCase):
         self.assertEqual(promoted, self.promote())
         self.assertEqual(1, len(self.pushed))
 
+    def test_promoted_candidate_remains_reusable_after_a_docs_commit(self):
+        self.promote()
+        Path('README.md').write_text('later documentation')
+        self.command('git', 'add', 'README.md')
+        self.command('git', 'commit', '-qm', 'docs')
+        target = self.command('git', 'rev-parse', 'HEAD')
+        self.assertEqual(target, self.promote())
+        self.assertEqual(1, len(self.pushed))
+
     def test_wrong_producer_or_unfinished_discovery_cannot_promote(self):
         for field, value in [('path', '.github/workflows/packages.yml'), ('head_branch', 'feature'),
                              ('event', 'pull_request'), ('status', 'in_progress'), ('conclusion', 'failure'),

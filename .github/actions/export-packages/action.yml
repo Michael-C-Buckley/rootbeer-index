@@ -1,6 +1,9 @@
 name: Export packages
 description: Build and qualify packages, reusing verified results for compatible engine inputs and build environments.
 inputs:
+  timeout-seconds:
+    description: Forge execution budget, leaving time for cleanup and retention
+    default: "3000"
   cache-context:
     description: Build environment identity from prepare-package-results
     required: true
@@ -16,10 +19,15 @@ inputs:
   recheck:
     description: Rebuild and recheck every package
     default: "false"
+outputs:
+  quiescent:
+    description: Forge returned after stopping its workers
+    value: ${{ steps.export.outputs.quiescent }}
 runs:
   using: composite
   steps:
     - name: Build, test, and export recipes
+      id: export
       shell: bash
       env:
         GITHUB_TOKEN: ${{ github.token }}
@@ -28,6 +36,7 @@ runs:
         SHOULD_RECHECK: ${{ inputs.recheck }}
         CATALOG: ${{ inputs.catalog }}
         ENGINE: ${{ inputs.engine }}
+        BUILD_TIMEOUT: ${{ inputs.timeout-seconds }}
       run: |
         if [ "$(uname -s)" = Darwin ]; then
           jobs=$(sysctl -n hw.logicalcpu)
@@ -50,7 +59,10 @@ runs:
             summary.write(f"Package plan: {counts['reuse']} reusable, {counts['qualify']} need qualification.\n")
         PYTHON
         if [ "$PLAN_ONLY" = true ]; then exit 0; fi
-        "$ENGINE" --catalog "$CATALOG" export \
+        status=0
+        "$ENGINE" --catalog "$CATALOG" export --timeout "$BUILD_TIMEOUT" \
           --registry tale/rootbeer-index --output "$RUNNER_TEMP/package-result" --workers 2 --jobs "$jobs" \
-          --cache .package-results --cache-context "$CACHE_CONTEXT" "${options[@]}"
+          --cache .package-results --cache-context "$CACHE_CONTEXT" "${options[@]}" || status=$?
+        if [ "$status" -le 1 ]; then echo "quiescent=true" >> "$GITHUB_OUTPUT"; fi
+        if [ "$status" != 0 ]; then exit "$status"; fi
         mv "$RUNNER_TEMP/package-result" result

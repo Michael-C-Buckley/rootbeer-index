@@ -19,7 +19,10 @@ runs:
         ENGINE_RUNNER: ${{ inputs.runner }}
       run: |
         revision=$(cat engine-revision)
-        [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
+        if ! [[ "$revision" =~ ^[0-9a-f]{40}$ ]]; then
+          echo 'engine-revision must contain a full lowercase commit SHA.' >&2
+          exit 1
+        fi
         case "$ENGINE_RUNNER" in
           ubuntu-24.04) target=x86_64-unknown-linux-gnu ;;
           ubuntu-24.04-arm) target=aarch64-unknown-linux-gnu ;;
