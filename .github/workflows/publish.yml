@@ -121,7 +121,7 @@ jobs:
     needs: [select, verify, retain]
     if: always() && github.ref == 'refs/heads/main' && needs.select.result == 'success' && needs.select.outputs.ready == 'true' && (needs.retain.result == 'success' || (needs.verify.result == 'skipped' && needs.select.outputs.candidate != '')) && vars.PUBLISH_INDEX == 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 60
     environment: package-publishing
     permissions:
       actions: read
