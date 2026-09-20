@@ -115,6 +115,8 @@ jobs:
         id: results
         with:
           runner: fixture-retry
+          shard: "0"
+          shards: "1"
           recheck: "true"
       - name: Test failure and recovery with the actual Forge cache
         env:
@@ -126,3 +128,9 @@ jobs:
         uses: ./.github/actions/save-package-results
         with:
           key: ${{ steps.results.outputs.cache-key }}
+          build-cache-key: ${{ steps.results.outputs.build-cache-key }}
+          cache-context: ${{ steps.results.outputs.cache-context }}
+          runner: fixture-retry
+          shard: "0"
+          shards: "1"
+          catalog: .cache-fixture/packages

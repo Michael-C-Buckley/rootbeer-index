@@ -1,6 +1,12 @@
 name: Prepare package results
 description: Identify the build environment and restore verified package results.
 inputs:
+  shards:
+    description: Total number of stable package batches
+    default: "4"
+  shard:
+    description: Zero-based package batch
+    required: true
   runner:
     description: Runner image label
     required: true
@@ -11,6 +17,12 @@ outputs:
   cache-key:
     description: Key for saving completed results
     value: ${{ steps.cache.outputs.cache-primary-key }}
+  build-cache-key:
+    description: Disposable download and compiler cache key
+    value: ${{ steps.scope.outputs.build-prefix }}-${{ github.run_id }}-${{ github.run_attempt }}
+  build-cache-prefix:
+    description: Restore prefix for disposable compiler and download caches
+    value: ${{ steps.scope.outputs.build-prefix }}-
   cache-context:
     description: Build environment identity
     value: ${{ steps.environment.outputs.digest }}
@@ -46,37 +58,67 @@ runs:
       env:
         SHOULD_RECHECK: ${{ inputs.recheck }}
         RESULT_RUNNER: ${{ inputs.runner }}
+        RESULT_SHARDS: ${{ inputs.shards }}
+        RESULT_SHARD: ${{ inputs.shard }}
         RESULT_CONTEXT: ${{ steps.environment.outputs.digest }}
       run: |
-        scope="results-v5-$RESULT_RUNNER-$RESULT_CONTEXT"
-        if [ "$SHOULD_RECHECK" = true ]; then scope="$scope-recheck-$GITHUB_RUN_ID"; fi
+        scope="results-v6-$RESULT_RUNNER-$RESULT_CONTEXT-shard-$RESULT_SHARD-of-$RESULT_SHARDS"
+        build_scope="compilers-v1-$RESULT_RUNNER-$RESULT_CONTEXT-$RESULT_SHARD"
+        if [ "$SHOULD_RECHECK" = true ]; then
+          scope="$scope-recheck-$GITHUB_RUN_ID"
+          build_scope="$build_scope-recheck-$GITHUB_RUN_ID"
+        fi
         echo "prefix=$scope" >> "$GITHUB_OUTPUT"
+        echo "build-prefix=$build_scope" >> "$GITHUB_OUTPUT"
     - name: Restore verified package results
       id: cache
       uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
-        path: .package-results
+        path: retained-results
         key: ${{ steps.scope.outputs.prefix }}-${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: ${{ github.run_attempt == 1 && inputs.recheck != 'true' && format('{0}-', steps.scope.outputs.prefix) || '' }}
+    - name: Use retained results
+      if: steps.cache.outputs.cache-matched-key != '' && github.run_attempt == 1
+      shell: bash
+      run: mv retained-results .package-results
+    - name: Restore results from before batching
+      if: github.run_attempt == 1 && inputs.recheck != 'true' && steps.cache.outputs.cache-matched-key == ''
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: .package-results
+        key: results-v5-${{ inputs.runner }}-${{ steps.environment.outputs.digest }}-${{ github.run_id }}-${{ github.run_attempt }}
         restore-keys: |
-          ${{ steps.scope.outputs.prefix }}-${{ github.run_id }}-
-          ${{ github.run_attempt == 1 && format('{0}-', steps.scope.outputs.prefix) || '' }}
-          ${{ github.run_attempt == 1 && inputs.recheck != 'true' && format('results-v4-{0}-{1}-', inputs.runner, steps.environment.outputs.digest) || '' }}
-    - name: Require retained work on retry
+          results-v5-${{ inputs.runner }}-${{ steps.environment.outputs.digest }}-
+          results-v4-${{ inputs.runner }}-${{ steps.environment.outputs.digest }}-
+    - name: Recover this batch's completed qualifications
+      if: github.run_attempt > 1
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        pattern: results-${{ inputs.runner }}-${{ inputs.shard }}-*
+        path: retry-results
+    - name: Require the latest checkpoint on retry
       if: github.run_attempt > 1
       shell: bash
       env:
-        MATCHED_KEY: ${{ steps.cache.outputs.cache-matched-key }}
+        CACHE_CONTEXT: ${{ steps.environment.outputs.digest }}
       run: |
-        if [ -z "$MATCHED_KEY" ]; then
-          echo 'Retry results are missing or the environment changed. Investigate retention before starting a new run.' >&2
-          exit 1
-        fi
+        python3 - <<'PYTHON'
+        import os, pathlib, subprocess
+        checkpoints = list(pathlib.Path('retry-results').glob('results-*'))
+        if not checkpoints:
+            raise SystemExit('Retry checkpoint is missing; refusing to rebuild completed work.')
+        latest = max(checkpoints, key=lambda path: int(path.name.rsplit('-', 1)[1]))
+        if (latest / 'environment').read_text().strip() != os.environ['CACHE_CONTEXT']:
+            raise SystemExit('The build environment changed; investigate before retrying.')
+        pathlib.Path('.package-results').mkdir(exist_ok=True)
+        subprocess.run(['tar', '-xzf', str(latest / 'results.tar.gz'), '-C', '.package-results'], check=True)
+        PYTHON
     - uses: oras-project/setup-oras@1d808f7d7f6995cc68b7bf507bfe5c5446e1dc9d # v2.0.1
-      if: inputs.recheck != 'true' && vars.DURABLE_PACKAGE_RESULTS == 'true'
+      if: github.run_attempt == 1 && inputs.recheck != 'true' && vars.DURABLE_PACKAGE_RESULTS != 'false'
       with:
         version: 1.3.0
     - name: Import approved durable qualifications
-      if: inputs.recheck != 'true' && vars.DURABLE_PACKAGE_RESULTS == 'true'
+      if: github.run_attempt == 1 && inputs.recheck != 'true' && vars.DURABLE_PACKAGE_RESULTS != 'false'
       shell: bash
       env:
         GH_TOKEN: ${{ github.token }}

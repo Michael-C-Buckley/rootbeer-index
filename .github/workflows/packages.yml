@@ -54,6 +54,7 @@ jobs:
       fail-fast: false
       matrix:
         runner: [ubuntu-24.04, ubuntu-24.04-arm, macos-15]
+        shard: [0, 1, 2, 3]
     runs-on: ${{ matrix.runner }}
     timeout-minutes: ${{ inputs.recheck && 170 || 75 }}
     steps:
@@ -75,11 +76,15 @@ jobs:
         with:
           recheck: ${{ inputs.recheck }}
           runner: ${{ matrix.runner }}
+          shard: ${{ matrix.shard }}
       - uses: ./.github/actions/export-packages
         id: export
         timeout-minutes: ${{ inputs.recheck && 150 || 55 }}
         with:
           timeout-seconds: ${{ inputs.recheck && 8700 || 3000 }}
+          build-cache-key: ${{ steps.results.outputs.build-cache-key }}
+          build-cache-prefix: ${{ steps.results.outputs.build-cache-prefix }}
+          shard: ${{ matrix.shard }}
           cache-context: ${{ steps.results.outputs.cache-context }}
           recheck: ${{ inputs.recheck }}
           catalog: ${{ inputs.catalog || 'packages' }}
@@ -88,13 +93,13 @@ jobs:
         if: ${{ !cancelled() && hashFiles('package-plan.json') != '' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: package-plan-${{ matrix.runner }}-${{ github.run_attempt }}
+          name: package-plan-${{ matrix.runner }}-${{ matrix.shard }}-${{ github.run_attempt }}
           path: package-plan.json
           retention-days: ${{ inputs.retention-days || 14 }}
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: ${{ !cancelled() && inputs.plan-only != true && steps.export.outcome == 'success' }}
         with:
-          name: packages-${{ matrix.runner }}
+          name: packages-${{ matrix.runner }}-${{ matrix.shard }}
           overwrite: true
           path: result/
           retention-days: ${{ inputs.retention-days || 14 }}
@@ -104,6 +109,13 @@ jobs:
         uses: ./.github/actions/save-package-results
         with:
           key: ${{ steps.results.outputs.cache-key }}
+          has-work: ${{ steps.export.outputs.has-work }}
+          build-cache-key: ${{ steps.results.outputs.build-cache-key }}
+          cache-context: ${{ steps.results.outputs.cache-context }}
+          runner: ${{ matrix.runner }}
+          shard: ${{ matrix.shard }}
+          catalog: ${{ inputs.catalog || 'packages' }}
+          retention-days: ${{ inputs.retention-days || 14 }}
 
   assemble:
     if: inputs.plan-only != true
