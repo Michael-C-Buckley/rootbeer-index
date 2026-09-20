@@ -34,14 +34,15 @@ jobs:
     steps:
       - name: Skip collector runs with no candidate
         id: check
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           COLLECTOR_RUN: ${{ github.event.workflow_run.id }}
         run: |
           ready=true
           if [ -n "$COLLECTOR_RUN" ]; then
-            ready=$(gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/actions/runs/$COLLECTOR_RUN/jobs?per_page=100" \
-              --jq '[.[].jobs[].steps[]? | select(.name == "Expose authenticated candidate locators" and .conclusion == "success")] | length > 0')
+            ready=$(gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/actions/runs/$COLLECTOR_RUN/jobs?per_page=100" |
+              jq '[.[].jobs[].steps[]? | select(.name == "Expose authenticated candidate locators" and .conclusion == "success")] | length > 0')
           fi
           echo "ready=$ready" >> "$GITHUB_OUTPUT"
 
