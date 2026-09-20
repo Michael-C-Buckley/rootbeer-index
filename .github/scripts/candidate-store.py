@@ -11,7 +11,9 @@ import tempfile
 ARTIFACT_TYPE = 'application/vnd.rootbeer.candidate.v1'
 APPROVAL_TYPE = 'https://rootbeer.tale.me/attestations/catalog-approval/v1'
 DIGEST = r'sha256:[0-9a-f]{64}'
-VERIFIER_INPUTS = ('engine-revision', '.github/workflows', '.github/actions', '.github/scripts')
+VERIFIER_INPUTS = ('engine-revision', '.github/workflows/packages.yml', '.github/workflows/discovery.yml',
+                   '.github/actions', '.github/scripts/rootbeer-update.py')
+PR_VERIFIER_INPUTS = ('engine-revision', '.github/workflows', '.github/actions', '.github/scripts')
 FILE = re.compile(r'(?:candidate\.json|bundle/index\.json|bundle/(?:receipts|qualifications)/[0-9a-f]{64}\.json|bundle/artifacts/[0-9a-f]{64}\.tar\.gz|discovery/(?:report\.json|summary\.md|packages/[a-z0-9][a-z0-9+._-]*\.lua))')
 
 

@@ -35,8 +35,8 @@ def fetch(sha):
     subprocess.run(['git', 'fetch', '--no-tags', 'origin', store.revision(sha)], check=True)
 
 
-def same_verifier(source, trusted):
-    if not store.same_inputs(source, trusted):
+def same_verifier(source, trusted, paths=store.VERIFIER_INPUTS):
+    if not store.same_inputs(source, trusted, paths):
         raise ValueError('producer differs from the trusted verifier')
 
 
@@ -47,9 +47,9 @@ def admit(run, repository, trusted):
         raise ValueError('producer has not run verification')
     source = store.revision(run['head_sha'])
     fetch(source)
-    same_verifier(source, trusted)
     event = run.get('event')
     if event == 'pull_request':
+        same_verifier(source, trusted, store.PR_VERIFIER_INPUTS)
         if run['path'] != '.github/workflows/packages.yml':
             raise ValueError('unexpected pull request producer')
         pulls = api(f'repos/{repository}/commits/{source}/pulls')
@@ -61,9 +61,12 @@ def admit(run, repository, trusted):
         base = store.revision(matching[0]['base']['sha'])
         fetch(base)
         base = store.revision(store.command('git', 'merge-base', source, base))
-        same_verifier(source, base)
+        same_verifier(source, base, store.PR_VERIFIER_INPUTS)
     elif event not in ['push', 'schedule', 'workflow_dispatch', 'repository_dispatch', 'workflow_run'] or run.get('head_branch') != 'main':
         raise ValueError('producer must verify main or an admitted pull request')
+    else:
+        store.command('git', 'merge-base', '--is-ancestor', source, trusted)
+        same_verifier(source, trusted)
     jobs = pages(f"repos/{repository}/actions/runs/{run['id']}/jobs", 'jobs')
     if not any(job['name'].split(' / ')[-1] == 'assemble' and job.get('conclusion') == 'success' for job in jobs):
         raise ValueError('producer has no successful complete assembly')
@@ -153,7 +156,7 @@ def collect(run_id, engine, destination):
     }
     (destination / 'candidate.json').write_text(json.dumps(metadata, sort_keys=True, separators=(',', ':')))
     reference = store.push(destination, f"run-{run_id}-{run['run_attempt']}", run['created_at'])
-    subprocess.run(['oras', 'tag', reference, reference.split('@')[1].replace(':', '-')], check=True)
+    subprocess.run(['oras', 'tag', reference, 'candidate-' + reference.split('@')[1].replace(':', '-')], check=True)
     store.output('reference', reference)
     store.output('digest', reference.split('@')[1])
     store.output('catalog_sha256', digest)

@@ -243,8 +243,9 @@ class PromotionTests(unittest.TestCase):
         self.command('git', 'init', '-q')
         for key, value in [('user.name', 'Test'), ('user.email', 'test@example.com'), ('commit.gpgsign', 'false')]:
             self.command('git', 'config', key, value)
-        self.paths = ['packages/tool.lua', 'engine-revision', '.github/workflows/discovery.yml',
-                      '.github/actions/setup/action.yml', '.github/scripts/candidate-store.py']
+        self.paths = ['packages/tool.lua', 'engine-revision', '.github/workflows/packages.yml',
+                      '.github/workflows/discovery.yml', '.github/actions/setup/action.yml',
+                      '.github/scripts/rootbeer-update.py']
         for name in self.paths:
             path = Path(name)
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -296,6 +297,17 @@ class PromotionTests(unittest.TestCase):
         target = self.command('git', 'rev-parse', 'HEAD')
         self.assertEqual(target, self.promote())
         self.assertEqual(1, len(self.pushed))
+
+    def test_collector_repairs_preserve_main_qualification_but_not_pr_trust(self):
+        for name in ['.github/scripts/retain-results.py', '.github/scripts/candidate-store.py',
+                     '.github/workflows/retain-results.yml', '.github/workflows/publish.yml']:
+            Path(name).write_text('collector repair')
+        self.command('git', 'add', '.github')
+        self.command('git', 'commit', '-qm', 'repair collector')
+        retain.same_verifier(self.source, 'HEAD')
+        with self.assertRaises(ValueError):
+            retain.same_verifier(self.source, 'HEAD', store.PR_VERIFIER_INPUTS)
+        self.assertIsNotNone(self.promote())
 
     def test_wrong_producer_or_unfinished_discovery_cannot_promote(self):
         for field, value in [('path', '.github/workflows/packages.yml'), ('head_branch', 'feature'),
@@ -370,14 +382,29 @@ class AdmissionTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.admit(jobs=jobs)
 
-    def test_any_verifier_tree_change_prevents_admission(self):
-        for path in ['engine-revision', '.github/workflows', '.github/actions', '.github/scripts']:
+    def test_any_qualification_input_change_prevents_admission(self):
+        for path in store.VERIFIER_INPUTS:
             def tree(*args):
                 return 'different' if args[-1] == f'source:{path}' else 'same'
             with self.subTest(path=path), patch.object(store, 'command', side_effect=tree), self.assertRaises(ValueError):
                 retain.same_verifier('source', 'trusted')
         with patch.object(store, 'command', return_value='same'):
             retain.same_verifier('source', 'trusted')
+
+    def test_main_producer_must_be_in_trusted_history(self):
+        run = dict(self.run, event='schedule', head_branch='main', path='.github/workflows/discovery.yml')
+        with patch.object(retain, 'fetch'), patch.object(store, 'command', side_effect=subprocess.CalledProcessError(1, 'git')), self.assertRaises(subprocess.CalledProcessError):
+            retain.admit(run, 'owner/index', 'c' * 40)
+
+    def test_pr_admission_compares_all_tooling_with_base_and_trusted_main(self):
+        with patch.object(retain, 'fetch'), patch.object(retain, 'same_verifier') as verifier, \
+             patch.object(retain, 'api', return_value=[self.pull]), \
+             patch.object(retain, 'pages', return_value=[{'name': 'assemble', 'conclusion': 'success'}]), \
+             patch.object(store, 'command', return_value='b' * 40):
+            retain.admit(self.run, 'owner/index', 'c' * 40)
+        self.assertEqual([('a' * 40, 'c' * 40, store.PR_VERIFIER_INPUTS),
+                          ('a' * 40, 'b' * 40, store.PR_VERIFIER_INPUTS)],
+                         [call.args for call in verifier.call_args_list])
 
 
 if __name__ == '__main__':

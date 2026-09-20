@@ -163,14 +163,16 @@ license and reject source selectors.
 
 Pull requests run package verification without publishing credentials. A separate
 [collector](.github/workflows/retain-results.yml) checks out trusted main, installs
-its own attested Forge, and admits only unchanged verification tooling from
-same-repository PRs or allowed main events. It checks successful assembly, GitHub
-artifact digests, complete qualifications, and catalog equality. Source Git objects
+its own attested Forge, and requires identical tooling for same-repository PRs.
+Main producers must belong to trusted main history and use the same engine,
+qualification workflows, actions, and discovery helper. Collector and publisher
+repairs can therefore reuse completed main qualifications. It checks successful
+assembly, GitHub artifact digests, complete qualifications, and catalog equality. Source Git objects
 are read as data; uploaded executables are never run by the collector or publisher.
 Fork results require a same-repository verification run before admission.
 
 The collector stores raw files in `ghcr.io/tale/rootbeer-index/results` and attests
-the resulting OCI digest. `sha256-<digest>` tags retain immutable candidates;
+the resulting OCI digest. `candidate-sha256-<digest>` tags retain immutable candidates;
 `catalog-<digest>` and `collector-<run>-<attempt>` tags are locators only. Readers
 resolve a locator once, verify the main collector's attestation, and consume exact
 content by digest. Keep these images and their OCI attestation referrers indefinitely.
