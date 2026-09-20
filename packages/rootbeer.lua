@@ -2,7 +2,7 @@ return {
     schema = 2,
     name = "rootbeer",
     description = "Declarative system configuration and package tooling in Lua",
-    default_version = "0.1.0-main+5e2153485889",
+    default_version = "0.1.0-main+1c4ae91fbd73",
     homepage = "https://rootbeer.tale.me",
     systems = { "aarch64-macos", "aarch64-linux", "x86_64-linux" },
     build = {
@@ -29,6 +29,15 @@ return {
         checks = { { "rb", "--version" }, { "rb", "--help" }, { "rootbeer-forge", "--help" } },
     },
     versions = {
+        ["0.1.0-main+1c4ae91fbd73"] = {
+            inputs = { source = {
+                url = "https://codeload.github.com/tale/rootbeer/tar.gz/1c4ae91fbd739b4e4ecd97124ee0a33a689d7346",
+                archive = "tar.gz",
+                strip_prefix = "rootbeer-1c4ae91fbd739b4e4ecd97124ee0a33a689d7346",
+                sha256 = "fb68fb67742c5beaa19f6d1f9c09ac26251fb13efcfa999db0623cea5ec28bc4",
+            } },
+            build = { ["backend"] = "rust", ["configure"] = {  }, ["dependencies"] = {  }, ["rust"] = { ["environment"] = { ["RB_BUILD_TIMESTAMP"] = "2026-09-20 13:27 UTC", ["ROOTBEER_INDEX_PUBLIC_KEY"] = "028c5b185fb63ea61128a0bf6fb0decc8b700020561db08d82a998c7d0493bc0", ["ROOTBEER_INDEX_URL"] = "https://pdr.rbpkg.com/current.json" }, ["features"] = {  }, ["no_default_features"] = false, ["packages"] = { "rootbeer-cli", "rootbeer-forge" } } },
+        },
         ["0.1.0-main+5e2153485889"] = {
             revision = 2,
             inputs = { source = {

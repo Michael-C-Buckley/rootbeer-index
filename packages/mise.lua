@@ -3,7 +3,7 @@ return {
     name = "mise",
     description = "Manage development tools and tasks",
     homepage = "https://github.com/jdx/mise",
-    default_version = "2026.9.11",
+    default_version = "2026.9.12",
     upstream = {
         github = "jdx/mise",
         repository_id = 586920414,
@@ -29,6 +29,9 @@ return {
     },
     versions = {
         ["2026.9.11"] = {
+            systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
+        },
+        ["2026.9.12"] = {
             systems = { "aarch64-linux", "aarch64-macos", "x86_64-linux" },
         },
         ["2026.9.5"] = {
