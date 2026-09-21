@@ -18,6 +18,26 @@ def module(name):
 selection = module('package-selection')
 jobs = module('package-jobs')
 producer = module('package-producer')
+proposals = module('propose-updates')
+
+
+class ProposalLockTests(unittest.TestCase):
+    def pull(self, branch, *paths):
+        return {'headRefName': branch, 'url': f'https://example.com/{branch}',
+                'files': [{'path': path} for path in paths]}
+
+    def test_disjoint_recipes_propose_concurrently(self):
+        open_pulls = [self.pull('updates/packages-1', 'packages/kitty.lua')]
+        self.assertIsNone(proposals.conflicting_proposal(open_pulls, ['rootbeer']))
+
+    def test_overlapping_recipe_waits_for_review(self):
+        open_pulls = [self.pull('updates/packages-1', 'packages/kitty.lua', 'packages/rootbeer.lua')]
+        pending = proposals.conflicting_proposal(open_pulls, ['rootbeer'])
+        self.assertEqual(pending['headRefName'], 'updates/packages-1')
+
+    def test_unrelated_branches_never_block(self):
+        open_pulls = [self.pull('fix/something', 'packages/rootbeer.lua')]
+        self.assertIsNone(proposals.conflicting_proposal(open_pulls, ['rootbeer']))
 
 
 class SelectionTests(unittest.TestCase):

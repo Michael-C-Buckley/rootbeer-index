@@ -7,8 +7,19 @@ import subprocess
 import tempfile
 
 
+ENGINE = 'rootbeer'
+
+
 def command(*args):
     return subprocess.check_output(args, text=True).strip()
+
+
+def conflicting_proposal(pulls, names):
+    """Proposals replace whole recipe files, so two touching one recipe would clobber."""
+    recipes = {f'packages/{name}.lua' for name in names}
+    return next((pull for pull in pulls
+                 if pull['headRefName'].startswith('updates/')
+                 and recipes & {item['path'] for item in pull['files']}), None)
 
 
 def main():
@@ -16,19 +27,20 @@ def main():
     requests = os.environ['PACKAGES'].split()
     if not requests or any(not re.fullmatch(r'[a-z0-9][a-z0-9+._-]*@[A-Za-z0-9._+-]+', item) for item in requests):
         raise ValueError('Expected exact package versions')
-    pulls = json.loads(command('gh', 'pr', 'list', '--repo', repository, '--state', 'open', '--json', 'headRefName,url'))
-    pending = next((pull for pull in pulls if pull['headRefName'].startswith('updates/packages-')), None)
+    names = sorted({request.split('@')[0] for request in requests})
+    pulls = json.loads(command('gh', 'pr', 'list', '--repo', repository, '--state', 'open', '--json', 'headRefName,url,files'))
+    pending = conflicting_proposal(pulls, names)
     if pending:
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
-            summary.write(f'An upstream update is already awaiting review: {pending["url"]}\n')
+            summary.write(f'An update to these recipes is already awaiting review: {pending["url"]}\n')
         return
     command('gh', 'auth', 'setup-git')
     command('git', 'fetch', 'origin', 'main')
     if command('git', 'rev-parse', 'origin/main') != os.environ['GITHUB_SHA']:
         raise ValueError('Main advanced during discovery; rerun discovery against current recipes')
-    branch = f'updates/packages-{os.environ["GITHUB_RUN_ID"]}'
+    namespace = 'engine' if names == [ENGINE] else 'packages'
+    branch = f'updates/{namespace}-{os.environ["GITHUB_RUN_ID"]}'
     command('git', 'switch', '-c', branch)
-    names = sorted({request.split('@')[0] for request in requests})
     for name in names:
         shutil.copyfile(f'candidates/packages/{name}.lua', f'packages/{name}.lua')
     command('git', 'config', 'user.name', 'github-actions[bot]')
